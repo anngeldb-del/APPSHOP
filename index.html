@@ -133,6 +133,34 @@
     <div id="cuentas-cliente"></div>
   </section>
 
+  <!-- ---- Envío masivo ---- -->
+  <section id="pantalla-envios" class="pantalla oculto">
+    <div class="topbar">
+      <button class="icon-btn btn-menu" title="Menú">☰</button>
+      <div>
+        <h2>Envío masivo</h2>
+        <div class="sub">Estados de cuenta por WhatsApp</div>
+      </div>
+    </div>
+    <p style="color:var(--tinta-suave);font-size:0.85rem;margin:-8px 0 14px;">
+      Se listan los clientes con saldo pendiente. Marca a quién enviarle y dale
+      "Comenzar" — WhatsApp solo deja abrir un chat a la vez, así que va uno por uno.
+    </p>
+    <div class="envios-acciones">
+      <button class="btn-chip" id="btn-envios-todos" type="button">Seleccionar todos</button>
+      <button class="btn-chip" id="btn-envios-ninguno" type="button">Ninguno</button>
+      <span id="envios-contador" class="etiqueta-panel"></span>
+    </div>
+    <div id="envios-lista"></div>
+    <div id="envios-vacio" class="vacio oculto">
+      <div class="vacio-ico">🎉</div>
+      <h3>Nadie debe saldo</h3>
+      <p>No hay clientes con saldo pendiente por ahora.</p>
+    </div>
+    <button class="btn btn-whatsapp" id="btn-envios-comenzar" disabled>Comenzar envío</button>
+    <div id="envios-cola" style="margin-top:16px;"></div>
+  </section>
+
 </div>
 
 <!-- ================= MENÚ ================= -->
@@ -154,6 +182,9 @@
     </button>
     <button class="drawer-item nav-item" data-pantalla="pantalla-clientes">
       <span class="nav-ico">🧾</span>Clientes
+    </button>
+    <button class="drawer-item nav-item" data-pantalla="pantalla-envios">
+      <span class="nav-ico">📨</span>Envío masivo
     </button>
 
     <div class="drawer-separador"></div>

@@ -51,11 +51,16 @@ una cuenta o registrar un pago — no se recalcula leyendo todo cada vez.
   detalle de cliente (cuentas + cuotas), alta de cuenta con generador de calendario de
   cuotas, registro de pagos, y el envío del estado de cuenta al cliente por WhatsApp
   (Click-to-Chat, sin backend adicional).
+- `js/modules/envios.js`: envío masivo de estados de cuenta — lista a los clientes con
+  saldo pendiente, dejas marcados a quién enviarle, y arma una fila para ir uno por uno.
 - `js/charts.js`: gráfica de barras en SVG puro, sin librerías externas.
 - `js/tema.js`: modo oscuro/claro con preferencia guardada en `localStorage`; el `<head>`
   de `index.html` aplica el tema antes de pintar para no parpadear.
 - `js/utils.js`: formato de dinero/fechas, toast, debounce, exportar CSV y armar enlaces de
   WhatsApp.
+- `js/estado-cuenta.js`: arma el texto del estado de cuenta de un cliente (lo comparten el
+  botón individual del detalle de cliente y el envío masivo, para no leer Firestore dos veces
+  con la misma lógica).
 
 ## Reportes y WhatsApp
 
@@ -67,6 +72,16 @@ una cuenta o registrar un pago — no se recalcula leyendo todo cada vez.
   pendientes de cada cuenta activa y abre `wa.me` con el texto precargado. Asume números de
   EE.UU./Canadá (antepone "1" a números de 10 dígitos); si se opera en otro país hay que
   ajustar `urlWhatsApp()` en `js/utils.js`.
+- **Envío masivo (menú → "Envío masivo")**: WhatsApp Click-to-Chat solo abre un chat por
+  clic — no existe una forma legítima de disparar varios mensajes a la vez desde el
+  navegador sin la API de negocio de pago de Meta, y automatizarlo sin que la persona lo
+  inicie viola los términos de WhatsApp y arriesga que los números queden marcados como
+  spam. Por eso esta pantalla arma una fila con los clientes seleccionados (por defecto,
+  todos los que tienen saldo pendiente y teléfono) y deja un botón "Enviar" por cliente:
+  sigue siendo mucho más rápido que ir a buscar a cada uno manualmente, pero cada mensaje
+  lo abre la propia persona con un clic. Si más adelante quieres automatización real
+  (recordatorios programados, sin intervención manual), eso ya requiere la API oficial de
+  WhatsApp Business y un backend — es un cambio de stack que hay que platicar aparte.
 
 ## Cómo agregar un módulo nuevo
 

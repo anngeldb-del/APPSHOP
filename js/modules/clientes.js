@@ -13,7 +13,6 @@ import {
   doc,
   addDoc,
   updateDoc,
-  getDoc,
   getDocs,
   onSnapshot,
   query,
@@ -27,6 +26,7 @@ import {
   runTransaction
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { formatoMoneda, formatoFecha, sumarDias, mostrarToast, debounce, urlWhatsApp } from "../utils.js";
+import { armarMensajeEstadoCuenta } from "../estado-cuenta.js";
 
 const PAGE_SIZE = 10;
 
@@ -216,47 +216,6 @@ export function render(container, user) {
     limpiarListeners();
     location.hash = "#/clientes";
   });
-
-  async function armarMensajeEstadoCuenta(clienteId) {
-    const clienteSnap = await getDoc(doc(db, "clientes", clienteId));
-    if (!clienteSnap.exists()) return null;
-    const cliente = clienteSnap.data();
-
-    const cuentasSnap = await getDocs(
-      query(collection(db, "clientes", clienteId, "cuentas"), where("estado", "==", "activa"))
-    );
-
-    const lineas = [];
-    for (const cuentaDoc of cuentasSnap.docs) {
-      const cuenta = cuentaDoc.data();
-      const cuotasSnap = await getDocs(
-        query(
-          collection(db, "clientes", clienteId, "cuentas", cuentaDoc.id, "cuotas"),
-          where("pagado", "==", false),
-          orderBy("numero")
-        )
-      );
-      if (cuotasSnap.empty) continue;
-      lineas.push(`*${cuenta.articulo}* (pendiente ${formatoMoneda(cuenta.saldoPendiente)}):`);
-      cuotasSnap.forEach((cuotaDoc) => {
-        const cuota = cuotaDoc.data();
-        lineas.push(`  Cuota ${cuota.numero}/${cuenta.numCuotas} — ${formatoMoneda(cuota.monto)} — vence ${formatoFecha(cuota.fechaVencimiento)}`);
-      });
-    }
-
-    return {
-      telefono: cliente.telefono,
-      mensaje: [
-        `Hola ${cliente.nombre || ""}, este es tu estado de cuenta con Nene's Shopping USA:`,
-        "",
-        ...(lineas.length ? lineas : ["No tienes cuotas pendientes por ahora. ¡Gracias!"]),
-        "",
-        `Saldo total pendiente: ${formatoMoneda(cliente.saldoPendiente || 0)}`,
-        "",
-        "Gracias por tu preferencia."
-      ].join("\n")
-    };
-  }
 
   btnWhatsAppCliente.addEventListener("click", async () => {
     if (!clienteActualId) return;

@@ -346,6 +346,63 @@ input, select { font-family: inherit; }
 
 .ganancia-lista { margin-top: 4px; }
 
+/* ---------- Envío masivo ---------- */
+.envios-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-chip {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  color: var(--tinta);
+}
+.btn-chip:hover { border-color: var(--rojo); }
+
+.envios-acciones .etiqueta-panel { margin-left: auto; }
+
+.envio-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+.envio-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--rojo);
+  flex-shrink: 0;
+}
+
+.envio-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.envio-info strong { font-size: 0.92rem; }
+.envio-info small { color: var(--tinta-suave); font-size: 0.76rem; }
+
+.envio-saldo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--rojo);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.envio-item--sin-telefono { opacity: 0.55; }
+
+.envio-cola-panel { text-align: center; }
+.envio-cola-panel h3 { font-size: 1.15rem; }
+
 /* ---------- Buscador / listas ---------- */
 .buscador { margin-bottom: 14px; }
 .buscador input {

@@ -13,11 +13,13 @@
 const MODULES = [
   { path: "dashboard", pantallaId: "pantalla-dashboard" },
   { path: "clientes", pantallaId: "pantalla-clientes" },
+  { path: "envios", pantallaId: "pantalla-envios" },
   // { path: "reportes", pantallaId: "pantalla-reportes" },
 ];
 
 import { render as renderDashboard } from "./modules/dashboard.js";
 import { render as renderClientes, irADetalle as clientesIrADetalle } from "./modules/clientes.js";
+import { render as renderEnvios } from "./modules/envios.js";
 
 const pantallas = MODULES.map((m) => document.getElementById(m.pantallaId));
 const detalleCliente = document.getElementById("detalle-cliente");
@@ -72,6 +74,7 @@ export function initRouter(user) {
   if (!inicializado) {
     renderDashboard(document.getElementById("pantalla-dashboard"), currentUser);
     renderClientes(document.getElementById("pantalla-clientes"), currentUser);
+    renderEnvios(document.getElementById("pantalla-envios"), currentUser);
 
     navItems.forEach((btn) => {
       btn.addEventListener("click", () => {

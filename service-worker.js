@@ -6,7 +6,7 @@
 // archivos base para forzar actualización en los teléfonos.
 // ============================================================
 
-const CACHE_VERSION = "nenes-shopping-v2";
+const CACHE_VERSION = "nenes-shopping-v3";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -19,8 +19,10 @@ const CORE_ASSETS = [
   "./js/utils.js",
   "./js/tema.js",
   "./js/charts.js",
+  "./js/estado-cuenta.js",
   "./js/modules/dashboard.js",
   "./js/modules/clientes.js",
+  "./js/modules/envios.js",
   "./assets/icon-192.png",
   "./assets/icon-512.png"
 ];
