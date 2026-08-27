@@ -6,7 +6,7 @@
 // archivos base para forzar actualización en los teléfonos.
 // ============================================================
 
-const CACHE_VERSION = "nenes-shopping-v5";
+const CACHE_VERSION = "nenes-shopping-v6";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -24,7 +24,10 @@ const CORE_ASSETS = [
   "./js/modules/clientes.js",
   "./js/modules/envios.js",
   "./assets/icon-192.png",
-  "./assets/icon-512.png"
+  "./assets/icon-512.png",
+  "./assets/logo-nenes.png",
+  "./assets/logo-nenes-completo.png",
+  "./assets/logo-codereset.png"
 ];
 
 self.addEventListener("install", (event) => {

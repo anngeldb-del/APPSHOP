@@ -100,27 +100,19 @@ input, select { font-family: inherit; }
 
 .marca-login { text-align: center; }
 
-.ticket-icono {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 12px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--rojo), var(--rojo-oscuro));
+.logo-nenes-tarjeta {
+  width: 180px;
+  margin: 0 auto 14px;
+  padding: 18px 16px 14px;
+  background: #fff;
+  border-radius: var(--radius);
   box-shadow: var(--glow-rojo);
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.marca-login h1 {
-  font-size: 1.5rem;
-  color: var(--rojo);
-  margin-bottom: 4px;
-  letter-spacing: 0.01em;
+.logo-nenes-completo {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .marca-login p {
@@ -226,6 +218,14 @@ input, select { font-family: inherit; }
   line-height: 1.5;
 }
 
+.logo-codereset {
+  display: block;
+  width: 26px;
+  height: auto;
+  margin: 0 auto 8px;
+  opacity: 0.9;
+}
+
 /* ---------- App shell ---------- */
 #app-shell { min-height: 100dvh; }
 
@@ -240,6 +240,8 @@ input, select { font-family: inherit; }
 
 .topbar h2 { font-size: 1.3rem; }
 .topbar .sub { color: var(--tinta-suave); font-size: 0.8rem; margin-top: 2px; }
+
+.logo-topbar { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
 
 .icon-btn {
   background: var(--superficie);
@@ -626,18 +628,9 @@ input, select { font-family: inherit; }
 .drawer-marca { display: flex; align-items: center; gap: 10px; }
 
 .drawer-icono {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--rojo), var(--rojo-oscuro));
-  box-shadow: var(--glow-rojo);
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 

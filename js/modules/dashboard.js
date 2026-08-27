@@ -73,7 +73,7 @@ export function render(container, user) {
   const btnReporte = container.querySelector("#btn-descargar-reporte");
   const btnExportar = container.querySelector("#btn-exportar-negocio");
 
-  versionEl.textContent = "1.1.0";
+  versionEl.textContent = "1.2.0";
 
   // se guarda el último cálculo para no repetir la lectura de cuentas
   // cuando el usuario le da a "Descargar reporte" justo después de cargar
