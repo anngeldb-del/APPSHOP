@@ -11,6 +11,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { initRouter } from "./router.js";
+import { iniciarTourSiEsPrimeraVez } from "./tour.js";
 
 const pantallaLogin = document.getElementById("pantalla-login");
 const appShell = document.getElementById("app-shell");
@@ -56,6 +57,7 @@ onAuthStateChanged(auth, (user) => {
     pantallaLogin.classList.add("oculto");
     appShell.classList.remove("oculto");
     initRouter(user);
+    setTimeout(iniciarTourSiEsPrimeraVez, 600);
   } else {
     appShell.classList.add("oculto");
     pantallaLogin.classList.remove("oculto");
