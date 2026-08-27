@@ -3,50 +3,76 @@
 // Router simple por hash (#/ruta). No recarga la página.
 // Cada módulo nuevo del proyecto se registra en MODULES abajo:
 // eso es lo único que hay que tocar para agregar una sección.
-// ============================================================
-
-import { renderDashboard } from "./modules/dashboard.js";
-
-// Registro de módulos: agregar aquí cada módulo nuevo del proyecto.
-// path   -> texto después del # en la URL
-// label  -> texto que aparece en el menú de navegación
-// render -> función que recibe (container, user) y pinta la vista
+//
+// A diferencia del boilerplate genérico, aquí las pantallas ya
+// vienen fijas en index.html (pantalla-dashboard, pantalla-clientes,
+// detalle-cliente) porque el diseño de Nene's Shopping USA las
+// define explícitamente. El router solo decide cuál mostrar y le
+// pasa el control de datos a cada módulo (que se inicializa una
+// sola vez y luego reacciona a Firestore por su cuenta).
 const MODULES = [
-  { path: "dashboard", label: "Inicio", render: renderDashboard },
-  // { path: "clientes", label: "Clientes", render: renderClientes },
-  // { path: "reportes", label: "Reportes", render: renderReportes },
+  { path: "dashboard", pantallaId: "pantalla-dashboard" },
+  { path: "clientes", pantallaId: "pantalla-clientes" },
+  // { path: "reportes", pantallaId: "pantalla-reportes" },
 ];
 
-const nav = document.getElementById("app-nav");
-const content = document.getElementById("app-content");
+import { render as renderDashboard } from "./modules/dashboard.js";
+import { render as renderClientes, irADetalle as clientesIrADetalle } from "./modules/clientes.js";
+
+const pantallas = MODULES.map((m) => document.getElementById(m.pantallaId));
+const detalleCliente = document.getElementById("detalle-cliente");
+const navItems = document.querySelectorAll(".nav-item");
 
 let currentUser = null;
+let inicializado = false;
 
-function buildNav() {
-  nav.innerHTML = MODULES.map(
-    (m) => `<a href="#/${m.path}" data-path="${m.path}">${m.label}</a>`
-  ).join("");
+function ocultarTodas() {
+  pantallas.forEach((p) => p.classList.add("oculto"));
+  detalleCliente.classList.add("oculto");
 }
 
-function setActiveLink(path) {
-  nav.querySelectorAll("a").forEach((a) => {
-    a.classList.toggle("active", a.dataset.path === path);
+function marcarNavActivo(pantallaId) {
+  navItems.forEach((btn) => {
+    btn.classList.toggle("activo", btn.dataset.pantalla === pantallaId);
   });
 }
 
 function renderRoute() {
-  const path = (location.hash.replace("#/", "") || MODULES[0]?.path);
-  const mod = MODULES.find((m) => m.path === path) || MODULES[0];
-  if (!mod) return;
+  const hash = location.hash.replace("#/", "");
+  const [ruta, subId] = hash.split("/");
 
-  setActiveLink(mod.path);
-  content.innerHTML = "";
-  mod.render(content, currentUser);
+  ocultarTodas();
+
+  if (ruta === "clientes" && subId) {
+    detalleCliente.classList.remove("oculto");
+    marcarNavActivo("pantalla-clientes");
+    clientesIrADetalle(subId);
+    return;
+  }
+
+  const mod = MODULES.find((m) => m.path === ruta) || MODULES[0];
+  document.getElementById(mod.pantallaId).classList.remove("oculto");
+  marcarNavActivo(mod.pantallaId);
 }
 
 export function initRouter(user) {
   currentUser = user;
-  buildNav();
-  window.addEventListener("hashchange", renderRoute);
+
+  if (!inicializado) {
+    renderDashboard(document.getElementById("pantalla-dashboard"), currentUser);
+    renderClientes(document.getElementById("pantalla-clientes"), currentUser);
+
+    navItems.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const mod = MODULES.find((m) => m.pantallaId === btn.dataset.pantalla);
+        location.hash = `#/${mod ? mod.path : MODULES[0].path}`;
+      });
+    });
+
+    window.addEventListener("hashchange", renderRoute);
+    inicializado = true;
+  }
+
+  if (!location.hash) location.hash = `#/${MODULES[0].path}`;
   renderRoute();
 }

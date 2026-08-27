@@ -1,10 +1,10 @@
 // ============================================================
 // firebase-config.js
 // Reemplazar DEFAULT_FB_CONFIG con las credenciales del proyecto
-// Firebase de este cliente específico. Se deja embebido directo
-// en el código (no solo en localStorage) porque en HD Crédit se
-// detectó que localStorage se puede perder con actualizaciones
-// del sistema operativo del teléfono.
+// Firebase de Nene's Shopping USA. Se deja embebido directo en el
+// código (no solo en localStorage) porque en HD Crédit se detectó
+// que localStorage se puede perder con actualizaciones del sistema
+// operativo del teléfono.
 // ============================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";

@@ -1,12 +1,12 @@
 {
-  "name": "Code-Reset App",
-  "short_name": "CodeReset",
-  "description": "Aplicación desarrollada por Code-Reset — Ing. Luis Ángel Díaz Bernal",
+  "name": "Nene's Shopping USA — Cuentas y Cuotas",
+  "short_name": "Nene's Shop",
+  "description": "Control de clientes, cuentas y cuotas de Nene's Shopping USA — desarrollado por Code-Reset",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#FAF7F6",
+  "theme_color": "#C4272B",
   "orientation": "portrait-primary",
   "icons": [
     { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

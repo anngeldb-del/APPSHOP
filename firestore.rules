@@ -1,0 +1,37 @@
+// ============================================================
+// firestore.rules
+// Nene's Shopping USA: solo personal autenticado (todo el equipo
+// entra con la misma app) puede leer/escribir clientes, cuentas y
+// cuotas. autenticado() se llama en cada match — no dejar reglas
+// "de repuesto" que definan una función de permisos y luego no la
+// usen (ese fue el bug real de NEXORA: todos terminaron con acceso
+// de admin porque puede() nunca se invocaba).
+// ============================================================
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    match /clientes/{clienteId} {
+      allow read, write: if autenticado();
+
+      match /cuentas/{cuentaId} {
+        allow read, write: if autenticado();
+
+        match /cuotas/{cuotaId} {
+          allow read, write: if autenticado();
+        }
+      }
+    }
+
+    // Bloquea cualquier otra colección no contemplada arriba.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

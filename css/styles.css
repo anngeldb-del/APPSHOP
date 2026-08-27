@@ -1,23 +1,33 @@
 /* ============================================================
-   Code-Reset — Identidad de marca (heredada de RESET Alarmas/GPS)
-   Ajustar --accent y --accent-soft si el cliente pide su propia
-   paleta; el resto de la estructura no cambia entre proyectos.
+   Nene's Shopping USA — Cuentas y cuotas
+   Identidad propia del cliente (roja/dorada), sobre la estructura
+   base de Code-Reset. Ajustar --rojo-primario si el cliente cambia
+   de marca; el resto de la estructura no cambia entre proyectos.
    ============================================================ */
 
 :root {
-  --bg: #000000;
-  --bg-card: #0d0d0d;
-  --accent: #9ACD32;       /* verde neón lima */
-  --accent-soft: #8CC63F;
-  --text: #ffffff;
-  --text-dim: #9a9a9a;
-  --danger: #ff5555;
-  --border: #1f1f1f;
+  --rojo-primario: #C4272B;
+  --rojo-oscuro: #8f1c1f;
+  --rojo-suave: #d98a8c;
+  --dorado: #C99A2E;
+  --dorado-oscuro: #a67f22;
 
-  --font-display: 'Orbitron', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --fondo: #FAF7F6;
+  --tarjeta: #FFFFFF;
+  --borde: #EFE4E3;
 
-  --radius: 10px;
+  --tinta: #24181A;
+  --tinta-suave: #8a7677;
+
+  --exito: #2E8B57;
+  --peligro: #C4272B;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-texto: 'Inter', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+
+  --radius: 14px;
+  --radius-sm: 8px;
   --gap: 16px;
 }
 
@@ -26,167 +36,445 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-mono);
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--font-texto);
   min-height: 100dvh;
 }
 
-.screen { min-height: 100dvh; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; }
+
+.oculto { display: none !important; }
+
+button { font-family: inherit; cursor: pointer; }
+input, select { font-family: inherit; }
 
 /* ---------- Login ---------- */
-#login-screen {
+#pantalla-login {
+  min-height: 100dvh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  gap: 20px;
 }
 
-.login-card {
-  width: 100%;
-  max-width: 380px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 32px 24px;
-  text-align: center;
-}
+.marca-login { text-align: center; }
 
-.login-logo {
+.ticket-icono {
   width: 56px;
   height: 56px;
-  margin-bottom: 12px;
-}
-
-.login-title {
+  margin: 0 auto 12px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--rojo-primario), var(--rojo-oscuro));
+  color: #fff;
   font-family: var(--font-display);
-  font-weight: 900;
-  letter-spacing: 2px;
-  font-size: 1.4rem;
-  margin: 0 0 4px;
-  color: var(--accent);
+  font-weight: 700;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.login-subtitle {
-  color: var(--text-dim);
+.marca-login h1 {
+  font-size: 1.5rem;
+  color: var(--rojo-primario);
+  margin-bottom: 4px;
+}
+
+.marca-login p {
+  color: var(--tinta-suave);
   font-size: 0.85rem;
-  margin: 0 0 24px;
+  margin: 0;
 }
 
-.field {
+.tarjeta-login {
+  width: 100%;
+  max-width: 380px;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 28px 22px;
+  box-shadow: 0 8px 24px rgba(36, 24, 26, 0.06);
+}
+
+.campo {
   display: block;
   text-align: left;
   margin-bottom: 14px;
   font-size: 0.8rem;
-  color: var(--text-dim);
+  color: var(--tinta-suave);
 }
 
-.field span { display: block; margin-bottom: 6px; }
+.campo label { display: block; margin-bottom: 6px; font-weight: 500; }
 
-.field input {
+.campo input,
+.campo select {
   width: 100%;
-  padding: 10px 12px;
-  background: #000;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  font-family: var(--font-mono);
+  padding: 11px 12px;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius-sm);
+  color: var(--tinta);
   font-size: 0.95rem;
 }
 
-.field input:focus {
+.campo input:focus,
+.campo select:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--rojo-primario);
 }
 
-.btn-primary {
+.btn {
   width: 100%;
-  padding: 12px;
-  margin-top: 6px;
-  background: var(--accent);
-  color: #000;
+  padding: 13px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: 1px;
-  font-size: 0.9rem;
-  cursor: pointer;
+  letter-spacing: 0.2px;
+  font-size: 0.92rem;
+  color: #fff;
 }
 
-.btn-primary:active { transform: scale(0.98); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.6; cursor: default; }
 
-.btn-ghost {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-family: var(--font-mono);
-  cursor: pointer;
-}
+.btn-primario { background: var(--rojo-primario); }
+.btn-dorado { background: var(--dorado); }
 
-.error-text {
-  color: var(--danger);
+.error-msg {
+  color: var(--peligro);
   font-size: 0.78rem;
   margin: -6px 0 12px;
+  min-height: 1em;
 }
 
-.login-footer {
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
+.credito-dev {
+  text-align: center;
   font-size: 0.7rem;
-  color: var(--text-dim);
+  color: var(--tinta-suave);
   line-height: 1.5;
 }
 
-.login-footer strong { color: var(--text); }
-
 /* ---------- App shell ---------- */
-.app-header {
+#app-shell { min-height: 100dvh; padding-bottom: 76px; }
+
+.pantalla { max-width: 640px; margin: 0 auto; padding: 18px 16px; }
+
+.topbar {
   display: flex;
   align-items: center;
-  gap: var(--gap);
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  background: var(--bg);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.topbar h2 { font-size: 1.3rem; }
+.topbar .sub { color: var(--tinta-suave); font-size: 0.8rem; margin-top: 2px; }
+
+.icon-btn {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tinta);
+  flex-shrink: 0;
+}
+
+/* ---------- Dashboard ---------- */
+.grid-kpi {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  color: var(--tinta-suave);
+  margin-bottom: 6px;
+}
+
+.kpi-valor {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--tinta);
+}
+
+.panel {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 12px;
+}
+
+.panel h3 { font-size: 1rem; margin-bottom: 12px; }
+
+.resumen-cuenta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borde);
+  font-size: 0.88rem;
+}
+
+.resumen-cuenta:last-child { border-bottom: none; }
+.resumen-cuenta span { color: var(--tinta-suave); }
+.resumen-cuenta strong { font-family: var(--font-mono); }
+
+/* ---------- Buscador / listas ---------- */
+.buscador { margin-bottom: 14px; }
+.buscador input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+}
+.buscador input:focus { outline: none; border-color: var(--rojo-primario); }
+
+.cliente-card {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.cliente-card .cc-info h4 { font-size: 0.98rem; margin-bottom: 3px; }
+.cliente-card .cc-info p { font-size: 0.78rem; color: var(--tinta-suave); margin: 0; }
+.cliente-card .cc-saldo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--rojo-primario);
+  white-space: nowrap;
+}
+.cliente-card .cc-saldo.al-dia { color: var(--exito); }
+
+.vacio { text-align: center; padding: 40px 16px; color: var(--tinta-suave); }
+.vacio-ico { font-size: 40px; margin-bottom: 8px; }
+.vacio h3 { color: var(--tinta); margin-bottom: 6px; font-size: 1rem; }
+.vacio p { font-size: 0.85rem; margin: 0; }
+
+.paginacion {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+.paginacion button {
+  flex: 1;
+  padding: 10px;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--tinta);
+}
+.paginacion button:disabled { opacity: 0.4; }
+
+/* ---------- Detalle de cliente / cuentas ---------- */
+.cuenta-card {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.cuenta-card .ca-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.cuenta-card h4 { font-size: 1rem; }
+.cuenta-card .ca-fecha { font-size: 0.75rem; color: var(--tinta-suave); }
+
+.badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.badge-activa { background: rgba(196,39,43,0.1); color: var(--rojo-primario); }
+.badge-pagada { background: rgba(46,139,87,0.12); color: var(--exito); }
+
+.progreso-barra {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--borde);
+  overflow: hidden;
+  margin: 10px 0;
+}
+.progreso-relleno { height: 100%; background: var(--dorado); }
+
+.ca-montos {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+  margin-bottom: 10px;
+}
+.ca-montos strong { color: var(--tinta); font-family: var(--font-mono); }
+
+.lista-cuotas { border-top: 1px solid var(--borde); padding-top: 8px; }
+
+.cuota-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  font-size: 0.83rem;
+}
+
+.cuota-item .cu-info { color: var(--tinta-suave); }
+.cuota-item .cu-info strong { color: var(--tinta); font-weight: 600; }
+.cuota-item .cu-monto { font-family: var(--font-mono); }
+
+.cuota-pagada { color: var(--exito); font-size: 0.75rem; font-weight: 600; }
+
+.btn-pagar {
+  background: var(--dorado);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ---------- Nav inferior ---------- */
+.nav-inferior {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--tarjeta);
+  border-top: 1px solid var(--borde);
+  padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
   z-index: 10;
 }
 
-.header-logo { width: 28px; height: 28px; }
-
-.app-nav {
+.nav-item {
   flex: 1;
+  background: none;
+  border: none;
   display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  font-size: 0.8rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  font-size: 0.68rem;
+  color: var(--tinta-suave);
+  border-radius: 10px;
 }
 
-.app-nav a {
-  color: var(--text-dim);
-  text-decoration: none;
+.nav-item.activo { color: var(--rojo-primario); font-weight: 600; }
+.nav-ico { font-size: 19px; }
+
+/* ---------- Modales ---------- */
+.modal-fondo {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(36,24,26,0.45);
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-fondo.abierto { display: flex; }
+
+.modal-caja {
+  width: 100%;
+  max-width: 480px;
+  max-height: 88dvh;
+  overflow-y: auto;
+  background: var(--tarjeta);
+  border-radius: 20px 20px 0 0;
+  padding: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modal-header h3 { font-size: 1.1rem; }
+
+#generador-cuotas {
+  border: 1px dashed var(--borde);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+  font-size: 0.78rem;
+  color: var(--tinta-suave);
+}
+
+#generador-cuotas .gc-fila {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+}
+
+/* ---------- Toast ---------- */
+#toast {
+  position: fixed;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--tinta);
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 200;
   white-space: nowrap;
-  padding: 6px 10px;
-  border-radius: 6px;
 }
 
-.app-nav a.active {
-  color: #000;
-  background: var(--accent);
-}
-
-.app-content {
-  padding: 16px;
-  max-width: 960px;
-  margin: 0 auto;
+#toast.mostrar {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ---------- Responsive ---------- */
 @media (min-width: 768px) {
-  .login-card { padding: 40px 32px; }
-  .app-content { padding: 24px; }
+  .tarjeta-login { padding: 36px 32px; }
+  .pantalla { padding: 28px 24px 60px; }
+  .grid-kpi { grid-template-columns: repeat(4, 1fr); }
+  .nav-inferior { max-width: 640px; left: 50%; transform: translateX(-50%); border-radius: 16px 16px 0 0; }
 }

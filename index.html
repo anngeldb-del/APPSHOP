@@ -1,75 +1,226 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-<title>Code-Reset App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Nene's Shopping USA · Cuentas y Cuotas</title>
 
-<!-- PWA -->
-<link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#000000" />
-<link rel="apple-touch-icon" href="assets/icon-192.png" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Code-Reset" />
+<!-- PWA: instalable en Android / iPhone / Windows -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#C4272B">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nene's Shop">
+<link rel="icon" href="assets/icon-192.png">
 
-<link rel="icon" href="assets/icon-192.png" />
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<!-- ===================== PANTALLA DE LOGIN ===================== -->
-<section id="login-screen" class="screen">
-  <div class="login-card">
-    <img src="assets/logo.svg" alt="Code-Reset" class="login-logo" />
-    <h1 class="login-title">CODE-RESET</h1>
-    <p class="login-subtitle" id="app-name-slot">Nombre de la app</p>
-
-    <form id="login-form" autocomplete="off">
-      <label class="field">
-        <span>Correo</span>
-        <input type="email" id="login-email" required autocomplete="username" />
-      </label>
-      <label class="field">
-        <span>Contraseña</span>
-        <input type="password" id="login-password" required autocomplete="current-password" />
-      </label>
-      <p id="login-error" class="error-text" hidden></p>
-      <button type="submit" id="login-btn" class="btn-primary">Entrar</button>
-    </form>
-
-    <footer class="login-footer">
-      <p>Desarrollado por: <strong>Ing. Luis Ángel Díaz Bernal</strong></p>
-      <p>Compañía: <strong>CODE-RESET</strong></p>
-    </footer>
+<!-- ================= LOGIN ================= -->
+<div id="pantalla-login">
+  <div class="marca-login">
+    <div class="ticket-icono">S</div>
+    <h1>Nene's Shopping USA</h1>
+    <p>Cuentas y cuotas</p>
   </div>
-</section>
+  <div class="tarjeta-login">
+    <form id="form-login">
+      <div class="campo">
+        <label for="login-email">Correo</label>
+        <input type="email" id="login-email" autocomplete="username" required>
+      </div>
+      <div class="campo">
+        <label for="login-password">Contraseña</label>
+        <input type="password" id="login-password" autocomplete="current-password" required>
+      </div>
+      <div id="login-error" class="error-msg"></div>
+      <button type="submit" class="btn btn-primario">Entrar</button>
+    </form>
+  </div>
+  <div class="credito-dev">
+    <p>Desarrollado por: Ing. Luis Ángel Díaz Bernal</p>
+    <p>Compañía: CODE-RESET</p>
+  </div>
+</div>
 
-<!-- ===================== SHELL DE LA APP ===================== -->
-<section id="app-shell" class="screen" hidden>
-  <header class="app-header">
-    <img src="assets/logo.svg" alt="Code-Reset" class="header-logo" />
-    <nav id="app-nav" class="app-nav"><!-- router.js pinta los links según los módulos registrados --></nav>
-    <button id="logout-btn" class="btn-ghost">Salir</button>
-  </header>
+<!-- ================= APP ================= -->
+<div id="app-shell" class="oculto">
 
-  <main id="app-content" class="app-content">
-    <!-- router.js inyecta aquí la vista activa -->
-  </main>
-</section>
+  <!-- ---- Dashboard ---- -->
+  <section id="pantalla-dashboard" class="pantalla">
+    <div class="topbar">
+      <div>
+        <h2>Dashboard</h2>
+        <div class="sub">Nene's Shopping USA</div>
+      </div>
+      <button class="icon-btn" id="btn-salir" title="Cerrar sesión">⏻</button>
+    </div>
+    <div class="grid-kpi" id="dashboard-kpis"></div>
+    <div class="panel">
+      <h3>Resumen general</h3>
+      <div class="resumen-cuenta"><span>Clientes registrados</span><strong id="dashboard-clientes-total">0</strong></div>
+      <div class="resumen-cuenta"><span>Cuentas activas / totales</span><strong id="dashboard-cuentas-total">0</strong></div>
+    </div>
+    <div style="text-align:center;color:var(--rojo-suave);font-size:11px;margin-top:8px;">
+      Versión <span id="version-app"></span>
+    </div>
+  </section>
 
-<script type="module" src="js/router.js"></script>
-<script type="module" src="js/auth.js"></script>
+  <!-- ---- Clientes ---- -->
+  <section id="pantalla-clientes" class="pantalla oculto">
+    <div class="topbar">
+      <div>
+        <h2>Clientes</h2>
+        <div class="sub">Doble tap en una tarjeta para abrirla</div>
+      </div>
+      <button class="icon-btn" id="btn-nuevo-cliente" title="Nuevo cliente">＋</button>
+    </div>
+    <div class="buscador">
+      <input type="text" id="buscador-clientes" placeholder="Buscar cliente por nombre…">
+    </div>
+    <div id="lista-clientes"></div>
+    <div id="clientes-vacio" class="vacio oculto">
+      <div class="vacio-ico">🧾</div>
+      <h3>Sin clientes todavía</h3>
+      <p>Toca el botón ＋ para registrar el primero.</p>
+    </div>
+    <div class="paginacion">
+      <button id="btn-pag-anterior" disabled>← Anterior</button>
+      <button id="btn-pag-siguiente" disabled>Siguiente →</button>
+    </div>
+  </section>
 
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js').catch(err => {
-        console.warn('Service worker no registrado:', err);
-      });
-    });
-  }
-</script>
+  <!-- ---- Detalle de cliente ---- -->
+  <section id="detalle-cliente" class="pantalla oculto">
+    <div class="topbar">
+      <button class="icon-btn" id="btn-volver-cliente" title="Volver">←</button>
+      <div style="flex:1;padding-left:10px;">
+        <h2 id="dc-nombre">—</h2>
+        <div class="sub" id="dc-telefono">—</div>
+      </div>
+      <button class="icon-btn" id="btn-nueva-cuenta" title="Nueva cuenta">＋</button>
+    </div>
+    <div class="panel" style="text-align:center;">
+      <div class="kpi-label">Saldo total pendiente</div>
+      <div class="kpi-valor" style="font-size:26px;color:var(--rojo-primario);" id="dc-saldo">$0.00</div>
+    </div>
+    <div id="cuentas-cliente"></div>
+  </section>
+
+  <!-- ---- Nav inferior ---- -->
+  <nav class="nav-inferior">
+    <button class="nav-item activo" data-pantalla="pantalla-dashboard">
+      <span class="nav-ico">📊</span>Dashboard
+    </button>
+    <button class="nav-item" data-pantalla="pantalla-clientes">
+      <span class="nav-ico">🧾</span>Clientes
+    </button>
+  </nav>
+</div>
+
+<!-- ================= MODALES ================= -->
+
+<!-- Nuevo cliente -->
+<div class="modal-fondo" id="modal-nuevo-cliente">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Nuevo cliente</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <form id="form-nuevo-cliente">
+      <div class="campo">
+        <label for="nc-nombre">Nombre completo</label>
+        <input type="text" id="nc-nombre" required>
+      </div>
+      <div class="campo">
+        <label for="nc-telefono">Teléfono</label>
+        <input type="tel" id="nc-telefono">
+      </div>
+      <div class="campo">
+        <label for="nc-direccion">Dirección</label>
+        <input type="text" id="nc-direccion">
+      </div>
+      <button type="submit" class="btn btn-primario">Guardar cliente</button>
+    </form>
+  </div>
+</div>
+
+<!-- Nueva cuenta (artículo a cuotas) -->
+<div class="modal-fondo" id="modal-nueva-cuenta">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Nueva cuenta a cuotas</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <form id="form-nueva-cuenta">
+      <div class="campo">
+        <label for="nc2-articulo">Artículo / accesorio</label>
+        <input type="text" id="nc2-articulo" placeholder="Ej. Bocina Bluetooth" required>
+      </div>
+      <div class="campo">
+        <label for="nc2-monto-total">Monto total ($)</label>
+        <input type="number" step="0.01" id="nc2-monto-total" required>
+      </div>
+      <div class="campo">
+        <label for="nc2-costo">Costo del artículo ($) — opcional, para calcular ganancia</label>
+        <input type="number" step="0.01" id="nc2-costo">
+      </div>
+      <div class="campo">
+        <label for="nc2-num-cuotas">Número de cuotas</label>
+        <input type="number" id="nc2-num-cuotas" min="1" value="1" required>
+      </div>
+      <div class="campo">
+        <label for="nc2-fecha-inicio">Fecha de la primera cuota</label>
+        <input type="date" id="nc2-fecha-inicio" required>
+      </div>
+      <div class="campo">
+        <label for="nc2-frecuencia">Frecuencia entre cuotas</label>
+        <select id="nc2-frecuencia">
+          <option value="7">Semanal (7 días)</option>
+          <option value="15" selected>Quincenal (15 días)</option>
+          <option value="30">Mensual (30 días)</option>
+          <option value="1">Diaria (1 día)</option>
+        </select>
+      </div>
+      <div id="generador-cuotas"></div>
+      <button type="submit" class="btn btn-primario" style="margin-top:8px;">Guardar cuenta</button>
+    </form>
+  </div>
+</div>
+
+<!-- Registrar pago -->
+<div class="modal-fondo" id="modal-pago">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Registrar pago</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <p id="pago-resumen" style="font-size:13.5px;color:var(--tinta-suave);margin-bottom:14px;"></p>
+    <form id="form-registrar-pago">
+      <div class="campo">
+        <label for="pago-monto">Monto recibido ($)</label>
+        <input type="number" step="0.01" id="pago-monto" required>
+      </div>
+      <div class="campo">
+        <label for="pago-metodo">Método de pago</label>
+        <select id="pago-metodo">
+          <option value="efectivo">Efectivo</option>
+          <option value="transferencia">Transferencia</option>
+          <option value="tarjeta">Tarjeta</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-dorado">Confirmar pago</button>
+    </form>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module" src="js/app.js"></script>
 </body>
 </html>

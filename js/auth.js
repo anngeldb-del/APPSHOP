@@ -12,26 +12,24 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { initRouter } from "./router.js";
 
-const loginScreen = document.getElementById("login-screen");
+const pantallaLogin = document.getElementById("pantalla-login");
 const appShell = document.getElementById("app-shell");
-const loginForm = document.getElementById("login-form");
+const loginForm = document.getElementById("form-login");
 const loginError = document.getElementById("login-error");
-const loginBtn = document.getElementById("login-btn");
-const logoutBtn = document.getElementById("logout-btn");
+const loginBtn = loginForm.querySelector("button[type=submit]");
+const btnSalir = document.getElementById("btn-salir");
 
-function showError(msg) {
+function mostrarError(msg) {
   loginError.textContent = msg;
-  loginError.hidden = false;
 }
 
-function clearError() {
-  loginError.hidden = true;
+function limpiarError() {
   loginError.textContent = "";
 }
 
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  clearError();
+  limpiarError();
   loginBtn.disabled = true;
   loginBtn.textContent = "Entrando...";
 
@@ -42,25 +40,25 @@ loginForm.addEventListener("submit", async (e) => {
     await signInWithEmailAndPassword(auth, email, password);
     // onAuthStateChanged se encarga de mostrar el app-shell
   } catch (err) {
-    showError(traducirErrorFirebase(err.code));
+    mostrarError(traducirErrorFirebase(err.code));
   } finally {
     loginBtn.disabled = false;
     loginBtn.textContent = "Entrar";
   }
 });
 
-logoutBtn.addEventListener("click", async () => {
+btnSalir.addEventListener("click", async () => {
   await signOut(auth);
 });
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    loginScreen.hidden = true;
-    appShell.hidden = false;
+    pantallaLogin.classList.add("oculto");
+    appShell.classList.remove("oculto");
     initRouter(user);
   } else {
-    appShell.hidden = true;
-    loginScreen.hidden = false;
+    appShell.classList.add("oculto");
+    pantallaLogin.classList.remove("oculto");
   }
 });
 
