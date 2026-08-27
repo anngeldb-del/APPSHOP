@@ -84,6 +84,7 @@
     </div>
 
     <button class="btn btn-reporte" id="btn-descargar-reporte">⬇ Descargar reporte (Excel / CSV)</button>
+    <button class="btn btn-reporte" id="btn-exportar-negocio" style="margin-top:8px;">📦 Exportar respaldo completo (JSON)</button>
 
     <div style="text-align:center;color:var(--tinta-suave);font-size:11px;margin-top:14px;">
       Versión <span id="version-app"></span>
@@ -131,7 +132,18 @@
       <div class="kpi-valor kpi-valor-grande" id="dc-saldo">$0.00</div>
       <button class="btn btn-whatsapp" id="btn-whatsapp-cliente">📲 Enviar estado de cuenta por WhatsApp</button>
     </div>
+    <div class="panel oculto" id="dc-notas-panel">
+      <div class="kpi-label">Notas</div>
+      <p id="dc-notas" style="margin:4px 0 0;font-size:0.88rem;"></p>
+    </div>
     <div id="cuentas-cliente"></div>
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Historial de pagos</h3>
+        <button class="icon-btn-mini" id="btn-toggle-historial" title="Mostrar/ocultar">▾</button>
+      </div>
+      <div id="historial-pagos" class="oculto"></div>
+    </div>
   </section>
 
   <!-- ---- Envío masivo ---- -->
@@ -227,6 +239,10 @@
         <label for="nc-direccion">Dirección</label>
         <input type="text" id="nc-direccion">
       </div>
+      <div class="campo">
+        <label for="nc-notas">Notas</label>
+        <textarea id="nc-notas" rows="2" placeholder="Ej. vive cerca del mercado, paga en efectivo…"></textarea>
+      </div>
       <button type="submit" class="btn btn-primario">Guardar cliente</button>
     </form>
   </div>
@@ -251,6 +267,10 @@
       <div class="campo">
         <label for="ec-direccion">Dirección</label>
         <input type="text" id="ec-direccion">
+      </div>
+      <div class="campo">
+        <label for="ec-notas">Notas</label>
+        <textarea id="ec-notas" rows="2" placeholder="Ej. vive cerca del mercado, paga en efectivo…"></textarea>
       </div>
       <button type="submit" class="btn btn-primario">Guardar cambios</button>
     </form>

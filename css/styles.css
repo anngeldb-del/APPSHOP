@@ -153,7 +153,8 @@ input, select { font-family: inherit; }
 .campo label { display: block; margin-bottom: 6px; font-weight: 500; }
 
 .campo input,
-.campo select {
+.campo select,
+.campo textarea {
   width: 100%;
   padding: 11px 12px;
   background: var(--fondo);
@@ -161,10 +162,13 @@ input, select { font-family: inherit; }
   border-radius: var(--radius-sm);
   color: var(--tinta);
   font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
 }
 
 .campo input:focus,
-.campo select:focus {
+.campo select:focus,
+.campo textarea:focus {
   outline: none;
   border-color: var(--rojo);
   box-shadow: 0 0 0 3px rgba(255, 45, 77, 0.18);
@@ -560,6 +564,26 @@ input, select { font-family: inherit; }
   font-size: 0.75rem;
   font-weight: 700;
   box-shadow: var(--glow-dorado);
+}
+
+/* ---------- Historial de pagos ---------- */
+.pago-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borde);
+  font-size: 0.82rem;
+}
+.pago-item:last-child { border-bottom: none; }
+.pago-item .pi-info { color: var(--tinta-suave); }
+.pago-item .pi-info strong { color: var(--tinta); font-weight: 600; }
+.pago-item .pi-monto {
+  font-family: var(--font-mono);
+  color: var(--verde);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Menú hamburguesa (drawer) ---------- */

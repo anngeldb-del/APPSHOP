@@ -97,6 +97,21 @@ export function descargarCSV(nombreArchivo, filas) {
   URL.revokeObjectURL(url);
 }
 
+// Descarga cualquier objeto como archivo .json — respaldo completo del
+// negocio (clientes, cuentas, cuotas, pagos), estructurado para poder
+// leerse o reimportarse a mano si algún día hace falta.
+export function descargarJSON(nombreArchivo, datos) {
+  const blob = new Blob([JSON.stringify(datos, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nombreArchivo;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 // Arma un link de WhatsApp Click-to-Chat. Asume número de EE.UU./Canadá
 // (10 dígitos -> antepone "1"); si el teléfono ya trae lada internacional
 // completa, se manda tal cual.

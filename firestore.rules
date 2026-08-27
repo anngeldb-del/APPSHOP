@@ -27,6 +27,10 @@ service cloud.firestore {
           allow read, write: if autenticado();
         }
       }
+
+      match /pagos/{pagoId} {
+        allow read, write: if autenticado();
+      }
     }
 
     // Bloquea cualquier otra colección no contemplada arriba.

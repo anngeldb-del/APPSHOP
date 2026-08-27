@@ -24,7 +24,7 @@ cuotas y sus pagos. Firebase Auth + Firestore como backend. Desarrollado por Cod
 
 ```
 clientes/{clienteId}
-  nombre, nombreBusqueda (nombre en minúsculas, para buscar), telefono, direccion,
+  nombre, nombreBusqueda (nombre en minúsculas, para buscar), telefono, direccion, notas,
   saldoPendiente (suma de saldoPendiente de sus cuentas), creadoEn
 
 clientes/{clienteId}/cuentas/{cuentaId}
@@ -33,7 +33,14 @@ clientes/{clienteId}/cuentas/{cuentaId}
 
 clientes/{clienteId}/cuentas/{cuentaId}/cuotas/{cuotaId}
   numero, fechaVencimiento, monto, pagado, fechaPago, metodoPago, montoPagado
+
+clientes/{clienteId}/pagos/{pagoId}
+  cuentaId, articulo, cuotaId, cuotaNumero, monto, metodoPago, fecha, creadoEn
 ```
+
+`pagos` es un registro aparte de las cuotas: cada vez que se registra un pago se crea aquí
+una ficha permanente (además de marcar la cuota como pagada), para poder ver el historial
+completo de un cliente sin depender de que la cuota "recuerde" su propio pago.
 
 `saldoPendiente` en cliente y cuenta se mantiene con transacciones/`increment()` al crear
 una cuenta o registrar un pago — no se recalcula leyendo todo cada vez.
@@ -48,9 +55,9 @@ una cuenta o registrar un pago — no se recalcula leyendo todo cada vez.
   no soporta "group by" en agregaciones) — para el volumen de un negocio así es aceptable;
   si crece mucho conviene precalcularlo con una Cloud Function.
 - `js/modules/clientes.js`: lista de clientes con búsqueda y paginación, alta y edición de
-  cliente, detalle de cliente (cuentas + cuotas), alta y edición de cuenta con generador de
-  calendario de cuotas, registro de pagos, y el envío del estado de cuenta al cliente por
-  WhatsApp (Click-to-Chat, sin backend adicional).
+  cliente (con notas libres), detalle de cliente (cuentas + cuotas + historial de pagos),
+  alta y edición de cuenta con generador de calendario de cuotas, registro de pagos, y el
+  envío del estado de cuenta al cliente por WhatsApp (Click-to-Chat, sin backend adicional).
 - `js/modules/envios.js`: envío masivo de estados de cuenta — lista a los clientes con
   saldo pendiente, dejas marcados a quién enviarle, y arma una fila para ir uno por uno.
 - `js/charts.js`: gráfica de barras en SVG puro, sin librerías externas.
@@ -96,6 +103,21 @@ una cuenta o registrar un pago — no se recalcula leyendo todo cada vez.
 
 Ambas eliminaciones piden confirmación (`confirm()` del navegador — nativo, sin componente
 nuevo) porque no se pueden deshacer.
+
+## Notas, historial de pagos y respaldo
+
+- **Notas por cliente**: campo libre en el alta y edición de cliente (ej. "vive cerca del
+  mercado", "paga en efectivo", "difícil de localizar por las tardes"). Se muestra en el
+  detalle del cliente solo cuando tiene algo escrito.
+- **Historial de pagos** (detalle de cliente, sección colapsable): los últimos 20 pagos del
+  cliente, con artículo, cuota, fecha, monto y método — lee la subcolección `pagos`, no las
+  cuotas, así que no se pierde nada aunque una cuota ya solo muestre su último estado.
+- **Exportar respaldo completo** (Dashboard → "Exportar respaldo completo (JSON)"): descarga
+  un `.json` con todos los clientes y, anidado, sus cuentas, cuotas y pagos — un respaldo de
+  verdad, no solo el resumen que trae el reporte CSV. Como recorre todo Firestore
+  (cliente → cuentas → cuotas/pagos) tarda unos segundos si hay muchos clientes; para un
+  negocio de este tamaño es aceptable, pero si crece mucho convendría moverlo a una Cloud
+  Function que arme el respaldo del lado del servidor.
 
 ## Cómo agregar un módulo nuevo
 

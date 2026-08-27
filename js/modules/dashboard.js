@@ -24,11 +24,18 @@ import {
   getAggregateFromServer,
   sum
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { formatoMoneda, formatoMonedaCorta, etiquetaMes, ultimosMeses, descargarCSV, mostrarToast } from "../utils.js";
+import { formatoMoneda, formatoMonedaCorta, etiquetaMes, ultimosMeses, descargarCSV, descargarJSON, mostrarToast } from "../utils.js";
 import { graficaBarras } from "../charts.js";
 
 function redondear2(n) {
   return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+}
+
+// Los campos creadoEn son Timestamps de Firestore — no se sirven bien en
+// un .json (no tienen un valor legible por sí solos), así que se
+// convierten a ISO antes de exportar.
+function isoDeTimestamp(ts) {
+  return ts?.toDate ? ts.toDate().toISOString() : ts ?? null;
 }
 
 // Lee todas las cuentas (collectionGroup) y calcula inversión,
@@ -64,6 +71,7 @@ export function render(container, user) {
   const graficaEl = container.querySelector("#dashboard-grafica-ganancia");
   const listaGananciaEl = container.querySelector("#dashboard-ganancia-lista");
   const btnReporte = container.querySelector("#btn-descargar-reporte");
+  const btnExportar = container.querySelector("#btn-exportar-negocio");
 
   versionEl.textContent = "1.1.0";
 
@@ -167,6 +175,58 @@ export function render(container, user) {
     } finally {
       btnReporte.disabled = false;
       btnReporte.textContent = "⬇ Descargar reporte (Excel / CSV)";
+    }
+  });
+
+  btnExportar.addEventListener("click", async () => {
+    btnExportar.disabled = true;
+    btnExportar.textContent = "Exportando…";
+    try {
+      const clientesSnap = await getDocs(collection(db, "clientes"));
+
+      const clientes = await Promise.all(
+        clientesSnap.docs.map(async (clienteDoc) => {
+          const cliente = clienteDoc.data();
+
+          const [cuentasSnap, pagosSnap] = await Promise.all([
+            getDocs(collection(db, "clientes", clienteDoc.id, "cuentas")),
+            getDocs(collection(db, "clientes", clienteDoc.id, "pagos"))
+          ]);
+
+          const cuentas = await Promise.all(
+            cuentasSnap.docs.map(async (cuentaDoc) => {
+              const cuotasSnap = await getDocs(collection(db, "clientes", clienteDoc.id, "cuentas", cuentaDoc.id, "cuotas"));
+              return {
+                id: cuentaDoc.id,
+                ...cuentaDoc.data(),
+                creadoEn: isoDeTimestamp(cuentaDoc.data().creadoEn),
+                cuotas: cuotasSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
+              };
+            })
+          );
+
+          return {
+            id: clienteDoc.id,
+            ...cliente,
+            creadoEn: isoDeTimestamp(cliente.creadoEn),
+            cuentas,
+            pagos: pagosSnap.docs.map((d) => ({ id: d.id, ...d.data(), creadoEn: isoDeTimestamp(d.data().creadoEn) }))
+          };
+        })
+      );
+
+      descargarJSON(`respaldo-nenes-shopping-${new Date().toISOString().slice(0, 10)}.json`, {
+        generadoEn: new Date().toISOString(),
+        negocio: "Nene's Shopping USA",
+        clientes
+      });
+      mostrarToast("Respaldo descargado");
+    } catch (err) {
+      console.error("Error exportando el respaldo:", err);
+      mostrarToast("No se pudo generar el respaldo");
+    } finally {
+      btnExportar.disabled = false;
+      btnExportar.textContent = "📦 Exportar respaldo completo (JSON)";
     }
   });
 

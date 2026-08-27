@@ -31,6 +31,7 @@ import { formatoMoneda, formatoFecha, sumarDias, mostrarToast, debounce, urlWhat
 import { armarMensajeEstadoCuenta } from "../estado-cuenta.js";
 
 const PAGE_SIZE = 10;
+const METODOS_PAGO = { efectivo: "Efectivo", transferencia: "Transferencia", tarjeta: "Tarjeta", otro: "Otro" };
 
 // ---- estado de lista/paginación ----
 let terminoBusqueda = "";
@@ -112,7 +113,11 @@ export function render(container, user) {
   const dcNombre = document.getElementById("dc-nombre");
   const dcTelefono = document.getElementById("dc-telefono");
   const dcSaldo = document.getElementById("dc-saldo");
+  const dcNotasPanel = document.getElementById("dc-notas-panel");
+  const dcNotas = document.getElementById("dc-notas");
   const cuentasClienteEl = document.getElementById("cuentas-cliente");
+  const btnToggleHistorial = document.getElementById("btn-toggle-historial");
+  const historialPagosEl = document.getElementById("historial-pagos");
   const btnVolverCliente = document.getElementById("btn-volver-cliente");
   const btnWhatsAppCliente = document.getElementById("btn-whatsapp-cliente");
   const btnEditarCliente = document.getElementById("btn-editar-cliente");
@@ -221,6 +226,7 @@ export function render(container, user) {
     const nombre = document.getElementById("nc-nombre").value.trim();
     const telefono = document.getElementById("nc-telefono").value.trim();
     const direccion = document.getElementById("nc-direccion").value.trim();
+    const notas = document.getElementById("nc-notas").value.trim();
     if (!nombre) return;
 
     const btn = formNuevoCliente.querySelector("button[type=submit]");
@@ -231,6 +237,7 @@ export function render(container, user) {
         nombreBusqueda: nombre.toLowerCase(),
         telefono,
         direccion,
+        notas,
         saldoPendiente: 0,
         creadoEn: serverTimestamp()
       });
@@ -254,6 +261,21 @@ export function render(container, user) {
     limpiarListeners();
     location.hash = "#/clientes";
   });
+
+  btnToggleHistorial.addEventListener("click", () => {
+    const abierto = historialPagosEl.classList.toggle("oculto") === false;
+    btnToggleHistorial.textContent = abierto ? "▴" : "▾";
+  });
+
+  function pintarPago(pago) {
+    const div = document.createElement("div");
+    div.className = "pago-item";
+    div.innerHTML = `
+      <div class="pi-info"><strong>${escaparHtml(pago.articulo || "")}</strong>${pago.cuotaNumero ? ` · Cuota ${pago.cuotaNumero}` : ""} · ${formatoFecha(pago.fecha)}</div>
+      <div class="pi-monto">${formatoMoneda(pago.monto)} · ${METODOS_PAGO[pago.metodoPago] || pago.metodoPago}</div>
+    `;
+    return div;
+  }
 
   btnWhatsAppCliente.addEventListener("click", async () => {
     if (!clienteActualId) return;
@@ -279,6 +301,7 @@ export function render(container, user) {
     document.getElementById("ec-nombre").value = clienteActualData.nombre || "";
     document.getElementById("ec-telefono").value = clienteActualData.telefono || "";
     document.getElementById("ec-direccion").value = clienteActualData.direccion || "";
+    document.getElementById("ec-notas").value = clienteActualData.notas || "";
     abrirModal("modal-editar-cliente");
   });
 
@@ -288,6 +311,7 @@ export function render(container, user) {
     const nombre = document.getElementById("ec-nombre").value.trim();
     const telefono = document.getElementById("ec-telefono").value.trim();
     const direccion = document.getElementById("ec-direccion").value.trim();
+    const notas = document.getElementById("ec-notas").value.trim();
     if (!nombre) return;
 
     const btn = formEditarCliente.querySelector("button[type=submit]");
@@ -297,7 +321,8 @@ export function render(container, user) {
         nombre,
         nombreBusqueda: nombre.toLowerCase(),
         telefono,
-        direccion
+        direccion,
+        notas
       });
       cerrarModal("modal-editar-cliente");
       mostrarToast("Cliente actualizado");
@@ -492,7 +517,7 @@ export function render(container, user) {
         <button class="btn-pagar">Pagar</button>
       `;
       div.querySelector(".btn-pagar").addEventListener("click", () => {
-        pagoContexto = { clienteId, cuentaId, cuotaId: cuota.id, monto: cuota.monto };
+        pagoContexto = { clienteId, cuentaId, cuotaId: cuota.id, cuotaNumero: cuota.numero, monto: cuota.monto };
         pagoResumen.textContent = `Cuota ${cuota.numero} — vence ${formatoFecha(cuota.fechaVencimiento)}`;
         document.getElementById("pago-monto").value = cuota.monto;
         abrirModal("modal-pago");
@@ -548,6 +573,8 @@ export function render(container, user) {
   abrirDetalleImpl = function abrirDetalle(clienteId) {
     limpiarListeners();
     clienteActualId = clienteId;
+    historialPagosEl.classList.add("oculto");
+    btnToggleHistorial.textContent = "▾";
 
     const clienteRef = doc(db, "clientes", clienteId);
     const unsubCliente = onSnapshot(clienteRef, (snap) => {
@@ -557,6 +584,12 @@ export function render(container, user) {
       dcNombre.textContent = cliente.nombre || "—";
       dcTelefono.textContent = cliente.telefono || "Sin teléfono";
       dcSaldo.textContent = formatoMoneda(cliente.saldoPendiente || 0);
+      if (cliente.notas) {
+        dcNotas.textContent = cliente.notas;
+        dcNotasPanel.classList.remove("oculto");
+      } else {
+        dcNotasPanel.classList.add("oculto");
+      }
     });
     unsubListeners.push(unsubCliente);
 
@@ -572,6 +605,19 @@ export function render(container, user) {
       }
     );
     unsubListeners.push(unsubCuentas);
+
+    const unsubPagos = onSnapshot(
+      query(collection(db, "clientes", clienteId, "pagos"), orderBy("creadoEn", "desc"), limit(20)),
+      (snap) => {
+        if (snap.empty) {
+          historialPagosEl.innerHTML = `<p style="color:var(--tinta-suave);font-size:0.85rem;">Todavía no hay pagos registrados.</p>`;
+          return;
+        }
+        historialPagosEl.innerHTML = "";
+        snap.forEach((d) => historialPagosEl.appendChild(pintarPago(d.data())));
+      }
+    );
+    unsubListeners.push(unsubPagos);
   };
 
   // ---------------- Registrar pago ----------------
@@ -583,10 +629,11 @@ export function render(container, user) {
     const metodoPago = document.getElementById("pago-metodo").value;
     if (!monto || monto <= 0) return;
 
-    const { clienteId, cuentaId, cuotaId } = pagoContexto;
+    const { clienteId, cuentaId, cuotaId, cuotaNumero } = pagoContexto;
     const cuentaRef = doc(db, "clientes", clienteId, "cuentas", cuentaId);
     const cuotaRef = doc(db, "clientes", clienteId, "cuentas", cuentaId, "cuotas", cuotaId);
     const clienteRef = doc(db, "clientes", clienteId);
+    const pagoRef = doc(collection(db, "clientes", clienteId, "pagos"));
 
     const btn = formPago.querySelector("button[type=submit]");
     btn.disabled = true;
@@ -606,6 +653,19 @@ export function render(container, user) {
         });
         tx.update(cuentaRef, { saldoPendiente: nuevoSaldoCuenta, estado: nuevoEstado });
         tx.update(clienteRef, { saldoPendiente: increment(-monto) });
+
+        // Ficha del pago para el historial — no depende de la cuota (que
+        // solo guarda su último pago), así queda un registro permanente.
+        tx.set(pagoRef, {
+          cuentaId,
+          articulo: cuenta.articulo || "",
+          cuotaId,
+          cuotaNumero: cuotaNumero || null,
+          monto,
+          metodoPago,
+          fecha: new Date().toISOString().slice(0, 10),
+          creadoEn: serverTimestamp()
+        });
       });
 
       formPago.reset();
