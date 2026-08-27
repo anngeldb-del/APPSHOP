@@ -4,6 +4,10 @@ PWA en HTML/JS puro (ES6 modules, sin build) para llevar clientes, artículos ve
 cuotas y sus pagos. Firebase Auth + Firestore como backend. Desarrollado por Code-Reset
 (Ing. Luis Ángel Díaz Bernal) sobre el boilerplate base de Code-Reset.
 
+**¿Solo quieres mostrar cómo se ve/usa la app, sin conectar Firebase todavía?**
+`demo/index.html` es un archivo único, autocontenido, con datos de ejemplo y sin
+dependencias — se puede mandar tal cual para que alguien la pruebe. Ver `demo/README.md`.
+
 ## Antes de usarla en producción
 
 1. Crear el proyecto en Firebase Console (Auth con método Correo/Contraseña + Firestore).

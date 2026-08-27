@@ -1,0 +1,3077 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Nene's Shopping USA · Demo</title>
+<meta name="theme-color" content="#0A0A0C">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23FF2D4D"/><text x="50" y="70" font-size="58" font-family="sans-serif" font-weight="700" fill="white" text-anchor="middle">S</text></svg>">
+
+<script>
+  document.documentElement.dataset.tema = localStorage.getItem("nenes-tema") || "oscuro";
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Nene's Shopping USA — Cuentas y cuotas
+   Identidad tecno: negro + rojo neón por defecto, con modo claro
+   opcional (interruptor en el menú). Los tokens de color viven en
+   :root (oscuro, default) y se redefinen bajo [data-tema="claro"];
+   el resto de la hoja solo lee variables, nunca colores directos.
+   ============================================================ */
+
+:root {
+  /* ---- oscuro (default) ---- */
+  --fondo: #0A0A0C;
+  --superficie: #131317;
+  --superficie-alt: #1A1A20;
+  --borde: #26262E;
+
+  --tinta: #F5F3F6;
+  --tinta-suave: #9C97A6;
+
+  --rojo: #FF2D4D;
+  --rojo-2: #FF5C7A;
+  --rojo-oscuro: #7A0F22;
+
+  --dorado: #FFC94D;
+  --dorado-oscuro: #C98F1C;
+
+  --verde: #2CFF80;
+  --exito: var(--verde);
+  --peligro: var(--rojo);
+
+  --glow-rojo: 0 0 18px rgba(255, 45, 77, 0.5);
+  --glow-dorado: 0 0 16px rgba(255, 201, 77, 0.38);
+  --glow-verde: 0 0 16px rgba(44, 255, 128, 0.4);
+  --sombra-tarjeta: 0 10px 28px -14px rgba(0, 0, 0, 0.65);
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-texto: 'Inter', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --gap: 16px;
+}
+
+:root[data-tema="claro"] {
+  --fondo: #F6F3F4;
+  --superficie: #FFFFFF;
+  --superficie-alt: #FBEEF0;
+  --borde: #E9DBDD;
+
+  --tinta: #1A1418;
+  --tinta-suave: #7A6E73;
+
+  --rojo: #D6123A;
+  --rojo-2: #EE3358;
+  --rojo-oscuro: #7A0F22;
+
+  --dorado: #B9821A;
+  --dorado-oscuro: #8F6512;
+
+  --verde: #17A85A;
+
+  --glow-rojo: 0 8px 20px -10px rgba(214, 18, 58, 0.4);
+  --glow-dorado: 0 8px 20px -10px rgba(185, 130, 26, 0.35);
+  --glow-verde: 0 8px 20px -10px rgba(23, 168, 90, 0.35);
+  --sombra-tarjeta: 0 10px 24px -16px rgba(26, 20, 24, 0.25);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--font-texto);
+  min-height: 100dvh;
+  transition: background 0.2s, color 0.2s;
+}
+
+h1, h2, h3 { font-family: var(--font-display); margin: 0; }
+
+.oculto { display: none !important; }
+
+button { font-family: inherit; cursor: pointer; }
+input, select { font-family: inherit; }
+
+/* ---------- Login ---------- */
+#pantalla-login {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 20px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 45, 77, 0.12), transparent 55%),
+    var(--fondo);
+}
+
+.marca-login { text-align: center; }
+
+.ticket-icono {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--rojo), var(--rojo-oscuro));
+  box-shadow: var(--glow-rojo);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marca-login h1 {
+  font-size: 1.5rem;
+  color: var(--rojo);
+  margin-bottom: 4px;
+  letter-spacing: 0.01em;
+}
+
+.marca-login p {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tarjeta-login {
+  width: 100%;
+  max-width: 380px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 28px 22px;
+  box-shadow: var(--sombra-tarjeta);
+}
+
+.campo {
+  display: block;
+  text-align: left;
+  margin-bottom: 14px;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.campo label { display: block; margin-bottom: 6px; font-weight: 500; }
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 11px 12px;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius-sm);
+  color: var(--tinta);
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  border-color: var(--rojo);
+  box-shadow: 0 0 0 3px rgba(255, 45, 77, 0.18);
+}
+
+.btn {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  font-size: 0.92rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.55; cursor: default; }
+.btn:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+
+.btn-primario { background: linear-gradient(135deg, var(--rojo), var(--rojo-oscuro)); box-shadow: var(--glow-rojo); }
+.btn-dorado { background: linear-gradient(135deg, var(--dorado), var(--dorado-oscuro)); color: #1a1408; box-shadow: var(--glow-dorado); }
+.btn-whatsapp { background: linear-gradient(135deg, #34D273, #1E9E52); box-shadow: var(--glow-verde); margin-top: 14px; }
+.btn-reporte {
+  background: var(--superficie);
+  color: var(--tinta);
+  border: 1px solid var(--borde);
+  margin-top: 6px;
+}
+.btn-reporte:hover { border-color: var(--dorado); }
+
+.btn-peligro {
+  background: transparent;
+  color: var(--rojo);
+  border: 1px solid var(--rojo);
+}
+.btn-peligro:hover { background: rgba(255, 45, 77, 0.1); }
+
+.error-msg {
+  color: var(--peligro);
+  font-size: 0.78rem;
+  margin: -6px 0 12px;
+  min-height: 1em;
+}
+
+.credito-dev {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--tinta-suave);
+  line-height: 1.5;
+}
+
+/* ---------- App shell ---------- */
+#app-shell { min-height: 100dvh; }
+
+.pantalla { max-width: 640px; margin: 0 auto; padding: 18px 16px 40px; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.topbar h2 { font-size: 1.3rem; }
+.topbar .sub { color: var(--tinta-suave); font-size: 0.8rem; margin-top: 2px; }
+
+.icon-btn {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tinta);
+  flex-shrink: 0;
+}
+
+.btn-menu { font-size: 18px; }
+
+/* ---------- Dashboard ---------- */
+.grid-kpi {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  position: relative;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 16px 16px 16px 20px;
+  overflow: hidden;
+}
+
+.kpi-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--borde);
+}
+
+.kpi-card--alerta::before { background: var(--rojo); box-shadow: var(--glow-rojo); }
+.kpi-card--exito::before { background: var(--verde); box-shadow: var(--glow-verde); }
+.kpi-card--dorado::before { background: var(--dorado); box-shadow: var(--glow-dorado); }
+
+.kpi-label {
+  font-size: 0.7rem;
+  color: var(--tinta-suave);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.kpi-valor {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.28rem;
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-valor-grande { font-size: 26px; color: var(--rojo); text-shadow: 0 0 20px rgba(255, 45, 77, 0.25); }
+
+.panel {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 12px;
+}
+
+.panel h3 { font-size: 1rem; }
+
+.panel-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.etiqueta-panel {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--tinta-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resumen-cuenta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borde);
+  font-size: 0.88rem;
+}
+
+.resumen-cuenta:last-child { border-bottom: none; }
+.resumen-cuenta span { color: var(--tinta-suave); }
+.resumen-cuenta strong { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* ---------- Gráfica de ganancia ---------- */
+.grafica-contenedor { margin: 6px 0 4px; }
+.grafica-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.grafica-eje { stroke: var(--borde); stroke-width: 1; }
+.barra-ganancia { fill: url(#gradiente-barra-ganancia); filter: drop-shadow(var(--glow-verde)); }
+.barra-valor { font-family: var(--font-mono); font-size: 8.5px; fill: var(--tinta-suave); }
+.barra-etiqueta { font-family: var(--font-mono); font-size: 8.5px; fill: var(--tinta-suave); letter-spacing: 0.03em; }
+.grad-inicio { stop-color: var(--dorado-oscuro); }
+.grad-fin { stop-color: var(--verde); }
+
+.ganancia-lista { margin-top: 4px; }
+
+/* ---------- Envío masivo ---------- */
+.envios-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-chip {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  color: var(--tinta);
+}
+.btn-chip:hover { border-color: var(--rojo); }
+
+.envios-acciones .etiqueta-panel { margin-left: auto; }
+
+.envio-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+.envio-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--rojo);
+  flex-shrink: 0;
+}
+
+.envio-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.envio-info strong { font-size: 0.92rem; }
+.envio-info small { color: var(--tinta-suave); font-size: 0.76rem; }
+
+.envio-saldo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--rojo);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.envio-item--sin-telefono { opacity: 0.55; }
+
+.envio-cola-panel { text-align: center; }
+.envio-cola-panel h3 { font-size: 1.15rem; }
+
+/* ---------- Buscador / listas ---------- */
+.buscador { margin-bottom: 14px; }
+.buscador input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+  color: var(--tinta);
+}
+.buscador input:focus { outline: none; border-color: var(--rojo); }
+
+.cliente-card {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.cliente-card .cc-info h4 { font-size: 0.98rem; margin-bottom: 3px; font-weight: 600; }
+.cliente-card .cc-info p { font-size: 0.78rem; color: var(--tinta-suave); margin: 0; }
+.cliente-card .cc-saldo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--rojo);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.cliente-card .cc-saldo.al-dia { color: var(--verde); }
+
+.vacio { text-align: center; padding: 40px 16px; color: var(--tinta-suave); }
+.vacio-ico { font-size: 40px; margin-bottom: 8px; }
+.vacio h3 { color: var(--tinta); margin-bottom: 6px; font-size: 1rem; }
+.vacio p { font-size: 0.85rem; margin: 0; }
+
+.paginacion {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+.paginacion button {
+  flex: 1;
+  padding: 10px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--tinta);
+}
+.paginacion button:disabled { opacity: 0.4; }
+
+/* ---------- Detalle de cliente / cuentas ---------- */
+.cuenta-card {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.cuenta-card .ca-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.ca-header-acciones { display: flex; align-items: center; gap: 8px; }
+
+.cuenta-card h4 { font-size: 1rem; }
+.cuenta-card .ca-fecha { font-size: 0.75rem; color: var(--tinta-suave); }
+
+.icon-btn-mini {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--superficie-alt);
+  border: 1px solid var(--borde);
+  color: var(--tinta-suave);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.icon-btn-mini:hover { color: var(--tinta); border-color: var(--rojo); }
+
+.badge {
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.badge-activa { background: rgba(255, 45, 77, 0.14); color: var(--rojo); }
+.badge-pagada { background: rgba(44, 255, 128, 0.14); color: var(--verde); }
+
+.progreso-barra {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--borde);
+  overflow: hidden;
+  margin: 10px 0;
+}
+.progreso-relleno { height: 100%; background: linear-gradient(90deg, var(--dorado-oscuro), var(--dorado)); box-shadow: var(--glow-dorado); }
+
+.ca-montos {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+  margin-bottom: 10px;
+}
+.ca-montos strong { color: var(--tinta); font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.lista-cuotas { border-top: 1px solid var(--borde); padding-top: 8px; }
+
+.cuota-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  font-size: 0.83rem;
+}
+
+.cuota-item .cu-info { color: var(--tinta-suave); }
+.cuota-item .cu-info strong { color: var(--tinta); font-weight: 600; }
+.cuota-item .cu-monto { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.cuota-pagada { color: var(--verde); font-size: 0.75rem; font-weight: 600; }
+
+.btn-pagar {
+  background: linear-gradient(135deg, var(--dorado), var(--dorado-oscuro));
+  color: #1a1408;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: var(--glow-dorado);
+}
+
+/* ---------- Historial de pagos ---------- */
+.pago-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borde);
+  font-size: 0.82rem;
+}
+.pago-item:last-child { border-bottom: none; }
+.pago-item .pi-info { color: var(--tinta-suave); }
+.pago-item .pi-info strong { color: var(--tinta); font-weight: 600; }
+.pago-item .pi-monto {
+  font-family: var(--font-mono);
+  color: var(--verde);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Menú hamburguesa (drawer) ---------- */
+.drawer-fondo {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 150;
+}
+
+.drawer-fondo.abierto { display: block; }
+
+.drawer-caja {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(300px, 84vw);
+  background: var(--superficie);
+  border-right: 1px solid var(--borde);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 12px 0 32px -18px rgba(0, 0, 0, 0.6);
+  transform: translateX(-100%);
+  transition: transform 0.22s ease;
+}
+
+.drawer-fondo.abierto .drawer-caja { transform: translateX(0); }
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.drawer-marca { display: flex; align-items: center; gap: 10px; }
+
+.drawer-icono {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--rojo), var(--rojo-oscuro));
+  box-shadow: var(--glow-rojo);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.drawer-titulo { font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; }
+.drawer-sub { font-size: 0.7rem; color: var(--tinta-suave); }
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 12px;
+  font-size: 0.9rem;
+  color: var(--tinta);
+  text-align: left;
+}
+
+.drawer-item .nav-ico { font-size: 18px; width: 22px; text-align: center; }
+
+.drawer-item:hover { background: var(--superficie-alt); }
+
+.drawer-item.activo {
+  background: rgba(255, 45, 77, 0.12);
+  color: var(--rojo);
+  font-weight: 600;
+}
+
+.drawer-separador { height: 1px; background: var(--borde); margin: 10px 4px; }
+
+.drawer-tema { justify-content: space-between; cursor: pointer; }
+.drawer-tema span:nth-child(2) { flex: 1; }
+
+.interruptor { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.interruptor input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.interruptor-riel {
+  position: absolute;
+  inset: 0;
+  background: var(--borde);
+  border-radius: 999px;
+  transition: background 0.15s;
+}
+.interruptor-riel::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--tinta);
+  transition: transform 0.15s;
+}
+.interruptor input:checked + .interruptor-riel { background: var(--rojo); }
+.interruptor input:checked + .interruptor-riel::before { transform: translateX(18px); background: #fff; }
+
+.drawer-salir { color: var(--rojo); margin-top: auto; }
+
+/* ---------- Modales ---------- */
+.modal-fondo {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-fondo.abierto { display: flex; }
+
+.modal-caja {
+  width: 100%;
+  max-width: 480px;
+  max-height: 88dvh;
+  overflow-y: auto;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+  padding: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modal-header h3 { font-size: 1.1rem; }
+
+#generador-cuotas {
+  border: 1px dashed var(--borde);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+  font-size: 0.78rem;
+  color: var(--tinta-suave);
+}
+
+#generador-cuotas .gc-fila {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+}
+
+/* ---------- Toast ---------- */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  color: var(--tinta);
+  padding: 11px 18px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 200;
+  white-space: nowrap;
+  box-shadow: var(--sombra-tarjeta);
+}
+
+#toast.mostrar {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- Responsive ---------- */
+@media (min-width: 768px) {
+  .tarjeta-login { padding: 36px 32px; }
+  .pantalla { padding: 28px 24px 60px; }
+  .grid-kpi { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ---------- Accesibilidad / movimiento ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+
+/* ---------- Demo ---------- */
+.demo-ribbon {
+  position: fixed;
+  top: 14px;
+  right: -38px;
+  transform: rotate(35deg);
+  background: linear-gradient(135deg, var(--dorado), var(--dorado-oscuro));
+  color: #1a1408;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 4px 44px;
+  z-index: 999;
+  pointer-events: none;
+  box-shadow: var(--glow-dorado);
+}
+.demo-hint {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--tinta-suave);
+  margin-top: -6px;
+}
+
+</style>
+</head>
+<body>
+
+
+<!-- ================= LOGIN ================= -->
+<div class="demo-ribbon">DEMO</div>
+<div id="pantalla-login">
+  <div class="marca-login">
+    <div class="ticket-icono">S</div>
+    <h1>Nene's Shopping USA</h1>
+    <p>Cuentas y cuotas</p>
+  </div>
+  <div class="tarjeta-login">
+    <form id="form-login">
+      <div class="campo">
+        <label for="login-email">Correo</label>
+        <input type="email" id="login-email" autocomplete="username" required>
+      </div>
+      <div class="campo">
+        <label for="login-password">Contraseña</label>
+        <input type="password" id="login-password" autocomplete="current-password" required>
+      </div>
+      <div id="login-error" class="error-msg"></div>
+      <p class="demo-hint">Modo demo — cualquier correo y contraseña funcionan.</p>
+      <button type="submit" class="btn btn-primario">Entrar</button>
+    </form>
+  </div>
+  <div class="credito-dev">
+    <p>Desarrollado por: Ing. Luis Ángel Díaz Bernal</p>
+    <p>Compañía: CODE-RESET</p>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app-shell" class="oculto">
+
+  <!-- ---- Dashboard ---- -->
+  <section id="pantalla-dashboard" class="pantalla">
+    <div class="topbar">
+      <button class="icon-btn btn-menu" title="Menú">☰</button>
+      <div>
+        <h2>Dashboard</h2>
+        <div class="sub">Nene's Shopping USA</div>
+      </div>
+    </div>
+
+    <div class="grid-kpi" id="dashboard-kpis"></div>
+
+    <div class="panel">
+      <h3>Resumen general</h3>
+      <div class="resumen-cuenta"><span>Clientes registrados</span><strong id="dashboard-clientes-total">0</strong></div>
+      <div class="resumen-cuenta"><span>Cuentas activas / totales</span><strong id="dashboard-cuentas-total">0</strong></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Ganancia por mes</h3>
+        <span class="etiqueta-panel">Últimos 6 meses</span>
+      </div>
+      <div id="dashboard-grafica-ganancia" class="grafica-contenedor"></div>
+      <div id="dashboard-ganancia-lista" class="ganancia-lista"></div>
+    </div>
+
+    <button class="btn btn-reporte" id="btn-descargar-reporte">⬇ Descargar reporte (Excel / CSV)</button>
+    <button class="btn btn-reporte" id="btn-exportar-negocio" style="margin-top:8px;">📦 Exportar respaldo completo (JSON)</button>
+
+    <div style="text-align:center;color:var(--tinta-suave);font-size:11px;margin-top:14px;">
+      Versión <span id="version-app"></span>
+    </div>
+  </section>
+
+  <!-- ---- Clientes ---- -->
+  <section id="pantalla-clientes" class="pantalla oculto">
+    <div class="topbar">
+      <button class="icon-btn btn-menu" title="Menú">☰</button>
+      <div style="flex:1;">
+        <h2>Clientes</h2>
+        <div class="sub">Doble tap en una tarjeta para abrirla</div>
+      </div>
+      <button class="icon-btn" id="btn-nuevo-cliente" title="Nuevo cliente">＋</button>
+    </div>
+    <div class="buscador">
+      <input type="text" id="buscador-clientes" placeholder="Buscar cliente por nombre…">
+    </div>
+    <div id="lista-clientes"></div>
+    <div id="clientes-vacio" class="vacio oculto">
+      <div class="vacio-ico">🧾</div>
+      <h3>Sin clientes todavía</h3>
+      <p>Toca el botón ＋ para registrar el primero.</p>
+    </div>
+    <div class="paginacion">
+      <button id="btn-pag-anterior" disabled>← Anterior</button>
+      <button id="btn-pag-siguiente" disabled>Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- ---- Detalle de cliente ---- -->
+  <section id="detalle-cliente" class="pantalla oculto">
+    <div class="topbar">
+      <button class="icon-btn" id="btn-volver-cliente" title="Volver">←</button>
+      <div style="flex:1;padding-left:10px;">
+        <h2 id="dc-nombre">—</h2>
+        <div class="sub" id="dc-telefono">—</div>
+      </div>
+      <button class="icon-btn" id="btn-editar-cliente" title="Editar cliente">✎</button>
+      <button class="icon-btn" id="btn-nueva-cuenta" title="Nueva cuenta">＋</button>
+    </div>
+    <div class="panel" style="text-align:center;">
+      <div class="kpi-label">Saldo total pendiente</div>
+      <div class="kpi-valor kpi-valor-grande" id="dc-saldo">$0.00</div>
+      <button class="btn btn-whatsapp" id="btn-whatsapp-cliente">📲 Enviar estado de cuenta por WhatsApp</button>
+    </div>
+    <div class="panel oculto" id="dc-notas-panel">
+      <div class="kpi-label">Notas</div>
+      <p id="dc-notas" style="margin:4px 0 0;font-size:0.88rem;"></p>
+    </div>
+    <div id="cuentas-cliente"></div>
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Historial de pagos</h3>
+        <button class="icon-btn-mini" id="btn-toggle-historial" title="Mostrar/ocultar">▾</button>
+      </div>
+      <div id="historial-pagos" class="oculto"></div>
+    </div>
+  </section>
+
+  <!-- ---- Envío masivo ---- -->
+  <section id="pantalla-envios" class="pantalla oculto">
+    <div class="topbar">
+      <button class="icon-btn btn-menu" title="Menú">☰</button>
+      <div>
+        <h2>Envío masivo</h2>
+        <div class="sub">Estados de cuenta por WhatsApp</div>
+      </div>
+    </div>
+    <p style="color:var(--tinta-suave);font-size:0.85rem;margin:-8px 0 14px;">
+      Se listan los clientes con saldo pendiente. Marca a quién enviarle y dale
+      "Comenzar" — WhatsApp solo deja abrir un chat a la vez, así que va uno por uno.
+    </p>
+    <div class="envios-acciones">
+      <button class="btn-chip" id="btn-envios-todos" type="button">Seleccionar todos</button>
+      <button class="btn-chip" id="btn-envios-ninguno" type="button">Ninguno</button>
+      <span id="envios-contador" class="etiqueta-panel"></span>
+    </div>
+    <div id="envios-lista"></div>
+    <div id="envios-vacio" class="vacio oculto">
+      <div class="vacio-ico">🎉</div>
+      <h3>Nadie debe saldo</h3>
+      <p>No hay clientes con saldo pendiente por ahora.</p>
+    </div>
+    <button class="btn btn-whatsapp" id="btn-envios-comenzar" disabled>Comenzar envío</button>
+    <div id="envios-cola" style="margin-top:16px;"></div>
+  </section>
+
+</div>
+
+<!-- ================= MENÚ ================= -->
+<div class="drawer-fondo" id="menu-drawer">
+  <nav class="drawer-caja">
+    <div class="drawer-header">
+      <div class="drawer-marca">
+        <div class="drawer-icono">S</div>
+        <div>
+          <div class="drawer-titulo">Nene's Shopping USA</div>
+          <div class="drawer-sub">Cuentas y cuotas</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="btn-cerrar-menu" title="Cerrar">✕</button>
+    </div>
+
+    <button class="drawer-item nav-item activo" data-pantalla="pantalla-dashboard">
+      <span class="nav-ico">📊</span>Dashboard
+    </button>
+    <button class="drawer-item nav-item" data-pantalla="pantalla-clientes">
+      <span class="nav-ico">🧾</span>Clientes
+    </button>
+    <button class="drawer-item nav-item" data-pantalla="pantalla-envios">
+      <span class="nav-ico">📨</span>Envío masivo
+    </button>
+
+    <div class="drawer-separador"></div>
+
+    <label class="drawer-item drawer-tema" for="interruptor-tema">
+      <span class="nav-ico">🌓</span>
+      <span id="etiqueta-tema">Modo oscuro</span>
+      <span class="interruptor">
+        <input type="checkbox" id="interruptor-tema">
+        <span class="interruptor-riel"></span>
+      </span>
+    </label>
+
+    <button class="drawer-item drawer-salir" id="btn-salir">
+      <span class="nav-ico">⏻</span>Cerrar sesión
+    </button>
+  </nav>
+</div>
+
+<!-- ================= MODALES ================= -->
+
+<!-- Nuevo cliente -->
+<div class="modal-fondo" id="modal-nuevo-cliente">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Nuevo cliente</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <form id="form-nuevo-cliente">
+      <div class="campo">
+        <label for="nc-nombre">Nombre completo</label>
+        <input type="text" id="nc-nombre" required>
+      </div>
+      <div class="campo">
+        <label for="nc-telefono">Teléfono</label>
+        <input type="tel" id="nc-telefono">
+      </div>
+      <div class="campo">
+        <label for="nc-direccion">Dirección</label>
+        <input type="text" id="nc-direccion">
+      </div>
+      <div class="campo">
+        <label for="nc-notas">Notas</label>
+        <textarea id="nc-notas" rows="2" placeholder="Ej. vive cerca del mercado, paga en efectivo…"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primario">Guardar cliente</button>
+    </form>
+  </div>
+</div>
+
+<!-- Editar cliente -->
+<div class="modal-fondo" id="modal-editar-cliente">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Editar cliente</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <form id="form-editar-cliente">
+      <div class="campo">
+        <label for="ec-nombre">Nombre completo</label>
+        <input type="text" id="ec-nombre" required>
+      </div>
+      <div class="campo">
+        <label for="ec-telefono">Teléfono</label>
+        <input type="tel" id="ec-telefono">
+      </div>
+      <div class="campo">
+        <label for="ec-direccion">Dirección</label>
+        <input type="text" id="ec-direccion">
+      </div>
+      <div class="campo">
+        <label for="ec-notas">Notas</label>
+        <textarea id="ec-notas" rows="2" placeholder="Ej. vive cerca del mercado, paga en efectivo…"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primario">Guardar cambios</button>
+    </form>
+    <button type="button" class="btn btn-peligro" id="btn-eliminar-cliente" style="margin-top:10px;">Eliminar cliente</button>
+  </div>
+</div>
+
+<!-- Nueva cuenta (artículo a cuotas) -->
+<div class="modal-fondo" id="modal-nueva-cuenta">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Nueva cuenta a cuotas</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <form id="form-nueva-cuenta">
+      <div class="campo">
+        <label for="nc2-articulo">Artículo / accesorio</label>
+        <input type="text" id="nc2-articulo" placeholder="Ej. Bocina Bluetooth" required>
+      </div>
+      <div class="campo">
+        <label for="nc2-monto-total">Monto total ($)</label>
+        <input type="number" step="0.01" id="nc2-monto-total" required>
+      </div>
+      <div class="campo">
+        <label for="nc2-costo">Costo del artículo ($) — opcional, para calcular ganancia</label>
+        <input type="number" step="0.01" id="nc2-costo">
+      </div>
+      <div class="campo">
+        <label for="nc2-num-cuotas">Número de cuotas</label>
+        <input type="number" id="nc2-num-cuotas" min="1" value="1" required>
+      </div>
+      <div class="campo">
+        <label for="nc2-fecha-inicio">Fecha de la primera cuota</label>
+        <input type="date" id="nc2-fecha-inicio" required>
+      </div>
+      <div class="campo">
+        <label for="nc2-frecuencia">Frecuencia entre cuotas</label>
+        <select id="nc2-frecuencia">
+          <option value="7">Semanal (7 días)</option>
+          <option value="15" selected>Quincenal (15 días)</option>
+          <option value="30">Mensual (30 días)</option>
+          <option value="1">Diaria (1 día)</option>
+        </select>
+      </div>
+      <div id="generador-cuotas"></div>
+      <button type="submit" class="btn btn-primario" style="margin-top:8px;">Guardar cuenta</button>
+    </form>
+  </div>
+</div>
+
+<!-- Editar cuenta -->
+<div class="modal-fondo" id="modal-editar-cuenta">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Editar cuenta</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <form id="form-editar-cuenta">
+      <div class="campo">
+        <label for="ecu-articulo">Artículo / accesorio</label>
+        <input type="text" id="ecu-articulo" required>
+      </div>
+      <div class="campo">
+        <label for="ecu-costo">Costo del artículo ($) — opcional, para calcular ganancia</label>
+        <input type="number" step="0.01" id="ecu-costo">
+      </div>
+      <p style="font-size:0.78rem;color:var(--tinta-suave);margin:-4px 0 12px;">
+        El monto total, número de cuotas y calendario no se editan aquí — si están mal,
+        elimina la cuenta y créala de nuevo.
+      </p>
+      <button type="submit" class="btn btn-primario">Guardar cambios</button>
+    </form>
+    <button type="button" class="btn btn-peligro" id="btn-eliminar-cuenta" style="margin-top:10px;">Eliminar cuenta</button>
+  </div>
+</div>
+
+<!-- Registrar pago -->
+<div class="modal-fondo" id="modal-pago">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Registrar pago</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <p id="pago-resumen" style="font-size:13.5px;color:var(--tinta-suave);margin-bottom:14px;"></p>
+    <form id="form-registrar-pago">
+      <div class="campo">
+        <label for="pago-monto">Monto recibido ($)</label>
+        <input type="number" step="0.01" id="pago-monto" required>
+      </div>
+      <div class="campo">
+        <label for="pago-metodo">Método de pago</label>
+        <select id="pago-metodo">
+          <option value="efectivo">Efectivo</option>
+          <option value="transferencia">Transferencia</option>
+          <option value="tarjeta">Tarjeta</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-dorado">Confirmar pago</button>
+    </form>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+
+<script type="module">
+
+// ============================================================
+// MOCK de Firebase (Firestore + Auth) — SOLO para este demo.
+// Implementa el mismo API que usa el código real (collection, doc,
+// addDoc, onSnapshot, query/where/orderBy/limit, runTransaction,
+// writeBatch, getCountFromServer, getAggregateFromServer, signIn...)
+// pero guardando todo en memoria (Map), sin red. Así el resto del
+// código — dashboard.js, clientes.js, envios.js, estado-cuenta.js,
+// router.js, auth.js — corre exactamente igual que en producción.
+// ============================================================
+
+const tienda = new Map(); // "clientes" | "clientes/id/cuentas" | ... -> Map(id -> data)
+
+function coleccionDe(path) {
+  if (!tienda.has(path)) tienda.set(path, new Map());
+  return tienda.get(path);
+}
+
+function generarId() {
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+}
+
+class Timestamp {
+  constructor(fecha) { this._fecha = fecha; }
+  toDate() { return this._fecha; }
+}
+
+function resolverSentinels(data, actual) {
+  const salida = {};
+  for (const [k, v] of Object.entries(data)) {
+    if (v && v.__sentinel === "serverTimestamp") salida[k] = new Timestamp(new Date());
+    else if (v && v.__sentinel === "increment") salida[k] = (actual[k] || 0) + v.n;
+    else salida[k] = v;
+  }
+  return salida;
+}
+
+function serverTimestamp() { return { __sentinel: "serverTimestamp" }; }
+function increment(n) { return { __sentinel: "increment", n }; }
+
+const db = { __db: true };
+const auth = { currentUser: null };
+
+function collection(dbArg, ...segmentos) {
+  return { __col: true, path: segmentos.join("/") };
+}
+
+function collectionGroup(dbArg, nombre) {
+  return { __col: true, __group: nombre, path: nombre };
+}
+
+function doc(refODb, ...segmentos) {
+  if (refODb && refODb.__col) {
+    const id = segmentos[0] || generarId();
+    return { __doc: true, path: `${refODb.path}/${id}`, id };
+  }
+  const path = segmentos.join("/");
+  return { __doc: true, path, id: segmentos[segmentos.length - 1] };
+}
+
+function query(ref, ...constraints) {
+  return { __query: true, ref, constraints };
+}
+function where(field, op, value) { return { __c: "where", field, op, value }; }
+function orderBy(field, dir = "asc") { return { __c: "orderBy", field, dir }; }
+function limit(n) { return { __c: "limit", n }; }
+function startAfter(cursor) { return { __c: "startAfter", cursor }; }
+function sum(field) { return { __agg: "sum", field }; }
+
+function docsDeGrupo(nombre) {
+  const resultado = [];
+  for (const [path, mapa] of tienda.entries()) {
+    const partes = path.split("/");
+    if (partes[partes.length - 1] === nombre) {
+      for (const [id, data] of mapa.entries()) resultado.push({ id, data, colPath: path });
+    }
+  }
+  return resultado;
+}
+
+function resolverDocs(refOQuery) {
+  let ref = refOQuery;
+  let constraints = [];
+  if (refOQuery.__query) {
+    ref = refOQuery.ref;
+    constraints = refOQuery.constraints;
+  }
+
+  let base = ref.__group
+    ? docsDeGrupo(ref.__group)
+    : Array.from(coleccionDe(ref.path).entries()).map(([id, data]) => ({ id, data, colPath: ref.path }));
+
+  for (const c of constraints.filter((c) => c.__c === "where")) {
+    base = base.filter((d) => {
+      const v = d.data[c.field];
+      if (c.op === "==") return v === c.value;
+      if (c.op === ">=") return v >= c.value;
+      if (c.op === "<=") return v <= c.value;
+      return true;
+    });
+  }
+
+  const ordenC = constraints.find((c) => c.__c === "orderBy");
+  if (ordenC) {
+    base.sort((a, b) => {
+      const av = a.data[ordenC.field];
+      const bv = b.data[ordenC.field];
+      let cmp;
+      if (av instanceof Timestamp && bv instanceof Timestamp) cmp = av.toDate() - bv.toDate();
+      else if (av < bv) cmp = -1;
+      else if (av > bv) cmp = 1;
+      else cmp = 0;
+      return ordenC.dir === "desc" ? -cmp : cmp;
+    });
+  }
+
+  const startC = constraints.find((c) => c.__c === "startAfter");
+  if (startC) {
+    const idx = base.findIndex((d) => d.id === startC.cursor.id);
+    if (idx >= 0) base = base.slice(idx + 1);
+  }
+
+  const limitC = constraints.find((c) => c.__c === "limit");
+  if (limitC) base = base.slice(0, limitC.n);
+
+  return base;
+}
+
+function envolverDoc(d) {
+  return {
+    id: d.id,
+    data: () => ({ ...d.data }),
+    exists: () => true,
+    ref: { __doc: true, path: `${d.colPath}/${d.id}`, id: d.id }
+  };
+}
+
+function envolverQuerySnapshot(docs) {
+  const envueltos = docs.map(envolverDoc);
+  return { docs: envueltos, empty: envueltos.length === 0, size: envueltos.length, forEach: (fn) => envueltos.forEach(fn) };
+}
+
+async function getDocs(refOQuery) {
+  return envolverQuerySnapshot(resolverDocs(refOQuery));
+}
+
+async function getDoc(docRef) {
+  const partes = docRef.path.split("/");
+  const id = partes.pop();
+  const colPath = partes.join("/");
+  const mapa = coleccionDe(colPath);
+  if (!mapa.has(id)) return { exists: () => false, data: () => undefined, id };
+  return envolverDoc({ id, data: mapa.get(id), colPath });
+}
+
+async function addDoc(collectionRef, data) {
+  const id = generarId();
+  coleccionDe(collectionRef.path).set(id, resolverSentinels(data, {}));
+  notificarTodos();
+  return { id, path: `${collectionRef.path}/${id}` };
+}
+
+async function updateDoc(docRef, data) {
+  const partes = docRef.path.split("/");
+  const id = partes.pop();
+  const mapa = coleccionDe(partes.join("/"));
+  const actual = mapa.get(id) || {};
+  mapa.set(id, { ...actual, ...resolverSentinels(data, actual) });
+  notificarTodos();
+}
+
+async function deleteDoc(docRef) {
+  const partes = docRef.path.split("/");
+  const id = partes.pop();
+  coleccionDe(partes.join("/")).delete(id);
+  notificarTodos();
+}
+
+function writeBatch() {
+  const ops = [];
+  return {
+    set(ref, data) { ops.push({ tipo: "set", ref, data }); },
+    update(ref, data) { ops.push({ tipo: "update", ref, data }); },
+    delete(ref) { ops.push({ tipo: "delete", ref }); },
+    async commit() {
+      aplicarOperaciones(ops);
+      notificarTodos();
+    }
+  };
+}
+
+async function runTransaction(dbArg, fn) {
+  const ops = [];
+  const tx = {
+    get: (ref) => getDoc(ref),
+    set(ref, data) { ops.push({ tipo: "set", ref, data }); },
+    update(ref, data) { ops.push({ tipo: "update", ref, data }); },
+    delete(ref) { ops.push({ tipo: "delete", ref }); }
+  };
+  const resultado = await fn(tx);
+  aplicarOperaciones(ops);
+  notificarTodos();
+  return resultado;
+}
+
+function aplicarOperaciones(ops) {
+  for (const op of ops) {
+    const partes = op.ref.path.split("/");
+    const id = partes.pop();
+    const mapa = coleccionDe(partes.join("/"));
+    if (op.tipo === "set") mapa.set(id, resolverSentinels(op.data, {}));
+    else if (op.tipo === "update") {
+      const actual = mapa.get(id) || {};
+      mapa.set(id, { ...actual, ...resolverSentinels(op.data, actual) });
+    } else if (op.tipo === "delete") mapa.delete(id);
+  }
+}
+
+async function getCountFromServer(refOQuery) {
+  const docs = resolverDocs(refOQuery);
+  return { data: () => ({ count: docs.length }) };
+}
+
+async function getAggregateFromServer(refOQuery, especificacion) {
+  const docs = resolverDocs(refOQuery);
+  const resultado = {};
+  for (const [alias, spec] of Object.entries(especificacion)) {
+    if (spec.__agg === "sum") resultado[alias] = docs.reduce((acc, d) => acc + (d.data[spec.field] || 0), 0);
+  }
+  return { data: () => resultado };
+}
+
+let contadorListeners = 0;
+const listeners = new Map();
+
+function onSnapshot(refOQuery, callback) {
+  const idL = contadorListeners++;
+  const ejecutar = () => {
+    if (refOQuery.__doc) getDoc(refOQuery).then(callback);
+    else getDocs(refOQuery).then(callback);
+  };
+  listeners.set(idL, ejecutar);
+  ejecutar();
+  return () => listeners.delete(idL);
+}
+
+function notificarTodos() {
+  listeners.forEach((fn) => fn());
+}
+
+async function signInWithEmailAndPassword(authArg, email, password) {
+  await new Promise((r) => setTimeout(r, 300));
+  authArg.currentUser = { email };
+  authListeners.forEach((fn) => fn(authArg.currentUser));
+}
+
+async function signOut(authArg) {
+  authArg.currentUser = null;
+  authListeners.forEach((fn) => fn(null));
+}
+
+const authListeners = [];
+function onAuthStateChanged(authArg, cb) {
+  authListeners.push(cb);
+  cb(authArg.currentUser);
+}
+
+
+// ============================================================
+// Datos de ejemplo — se cargan una sola vez al abrir el demo.
+// Recargar la página reinicia todo a este estado.
+// ============================================================
+
+function fechaISO(fecha) {
+  const y = fecha.getFullYear();
+  const m = String(fecha.getMonth() + 1).padStart(2, "0");
+  const d = String(fecha.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function fechaHace(meses, dia) {
+  const f = new Date();
+  f.setDate(1);
+  f.setMonth(f.getMonth() - meses);
+  if (dia) f.setDate(dia);
+  return f;
+}
+
+function generarCuotasSeed(montoTotal, numCuotas, fechaInicioDate, frecuenciaDias, numPagadas) {
+  const montoCuota = Math.round((montoTotal / numCuotas) * 100) / 100;
+  const cuotas = [];
+  let acumulado = 0;
+  for (let i = 0; i < numCuotas; i++) {
+    const esUltima = i === numCuotas - 1;
+    const monto = esUltima ? Math.round((montoTotal - acumulado) * 100) / 100 : montoCuota;
+    acumulado = Math.round((acumulado + monto) * 100) / 100;
+    const fechaVenc = new Date(fechaInicioDate);
+    fechaVenc.setDate(fechaVenc.getDate() + i * frecuenciaDias);
+    cuotas.push({ numero: i + 1, fechaVencimiento: fechaISO(fechaVenc), monto, pagado: i < numPagadas });
+  }
+  return cuotas;
+}
+
+function crearClienteSeed(id, { nombre, telefono, direccion, notas, creadoMesesAtras }) {
+  coleccionDe("clientes").set(id, {
+    nombre,
+    nombreBusqueda: nombre.toLowerCase(),
+    telefono: telefono || "",
+    direccion: direccion || "",
+    notas: notas || "",
+    saldoPendiente: 0,
+    creadoEn: new Timestamp(fechaHace(creadoMesesAtras || 6, 1))
+  });
+}
+
+function crearCuentaSeed(clienteId, { articulo, montoTotal, costo, numCuotas, frecuenciaDias, mesesAtras, dia, numPagadas, metodoPago }) {
+  const cuentaId = generarId();
+  const fechaInicioDate = fechaHace(mesesAtras, dia);
+  const cuotas = generarCuotasSeed(montoTotal, numCuotas, fechaInicioDate, frecuenciaDias, numPagadas);
+  const saldoPendiente = Math.round(cuotas.filter((c) => !c.pagado).reduce((a, c) => a + c.monto, 0) * 100) / 100;
+  const estado = saldoPendiente <= 0 ? "pagada" : "activa";
+
+  coleccionDe(`clientes/${clienteId}/cuentas`).set(cuentaId, {
+    articulo,
+    montoTotal,
+    costo: costo ?? null,
+    numCuotas,
+    fechaInicio: fechaISO(fechaInicioDate),
+    frecuenciaDias,
+    montoCuota: Math.round((montoTotal / numCuotas) * 100) / 100,
+    saldoPendiente,
+    estado,
+    creadoEn: new Timestamp(fechaInicioDate)
+  });
+
+  cuotas.forEach((cuota) => {
+    const cuotaId = generarId();
+    const datosCuota = { ...cuota };
+    if (cuota.pagado) {
+      datosCuota.fechaPago = cuota.fechaVencimiento;
+      datosCuota.metodoPago = metodoPago || "efectivo";
+      datosCuota.montoPagado = cuota.monto;
+
+      const pagoId = generarId();
+      coleccionDe(`clientes/${clienteId}/pagos`).set(pagoId, {
+        cuentaId,
+        articulo,
+        cuotaId,
+        cuotaNumero: cuota.numero,
+        monto: cuota.monto,
+        metodoPago: metodoPago || "efectivo",
+        fecha: cuota.fechaVencimiento,
+        creadoEn: new Timestamp(new Date(`${cuota.fechaVencimiento}T12:00:00`))
+      });
+    }
+    coleccionDe(`clientes/${clienteId}/cuentas/${cuentaId}/cuotas`).set(cuotaId, datosCuota);
+  });
+
+  return saldoPendiente;
+}
+
+function actualizarSaldoCliente(clienteId, delta) {
+  const mapa = coleccionDe("clientes");
+  const actual = mapa.get(clienteId);
+  mapa.set(clienteId, { ...actual, saldoPendiente: Math.round(((actual.saldoPendiente || 0) + delta) * 100) / 100 });
+}
+
+function sembrarDatos() {
+  crearClienteSeed("cli-maria", {
+    nombre: "María Gutiérrez",
+    telefono: "2145550192",
+    direccion: "Calle 5 #123, Dallas, TX",
+    notas: "Vive cerca del mercado sobre la 5ta. Paga siempre en efectivo, mejor buscarla los sábados por la tarde.",
+    creadoMesesAtras: 4
+  });
+  actualizarSaldoCliente("cli-maria", crearCuentaSeed("cli-maria", { articulo: "Bocina Bluetooth JBL", montoTotal: 400, costo: 150, numCuotas: 5, frecuenciaDias: 15, mesesAtras: 1, dia: 5, numPagadas: 2, metodoPago: "efectivo" }));
+  actualizarSaldoCliente("cli-maria", crearCuentaSeed("cli-maria", { articulo: "Freidora de aire 6L", montoTotal: 480, costo: 280, numCuotas: 4, frecuenciaDias: 15, mesesAtras: 4, dia: 12, numPagadas: 4, metodoPago: "transferencia" }));
+
+  crearClienteSeed("cli-jorge", { nombre: "Jorge Ramírez", telefono: "4695550110", creadoMesesAtras: 3 });
+  actualizarSaldoCliente("cli-jorge", crearCuentaSeed("cli-jorge", { articulo: "Consola de videojuegos", montoTotal: 600, costo: 380, numCuotas: 6, frecuenciaDias: 15, mesesAtras: 3, dia: 8, numPagadas: 6, metodoPago: "tarjeta" }));
+
+  crearClienteSeed("cli-ana", { nombre: "Ana Torres", telefono: "9725550143", direccion: "Av. Independencia 45", creadoMesesAtras: 1 });
+  actualizarSaldoCliente("cli-ana", crearCuentaSeed("cli-ana", { articulo: "Refrigerador 18 pies", montoTotal: 1500, costo: 950, numCuotas: 10, frecuenciaDias: 15, mesesAtras: 0, dia: 3, numPagadas: 2, metodoPago: "transferencia" }));
+
+  crearClienteSeed("cli-luis", { nombre: "Luis Fernández", telefono: "2145550187", creadoMesesAtras: 3 });
+  actualizarSaldoCliente("cli-luis", crearCuentaSeed("cli-luis", { articulo: "Lavadora 15kg", montoTotal: 700, costo: 420, numCuotas: 7, frecuenciaDias: 15, mesesAtras: 2, dia: 20, numPagadas: 2, metodoPago: "efectivo" }));
+
+  crearClienteSeed("cli-karla", { nombre: "Karla Domínguez", telefono: "8175550199", notas: "Referida por Ana Torres.", creadoMesesAtras: 0 });
+
+  crearClienteSeed("cli-rosa", { nombre: "Rosa Martínez", telefono: "", creadoMesesAtras: 1 });
+  actualizarSaldoCliente("cli-rosa", crearCuentaSeed("cli-rosa", { articulo: "Plancha para cabello", montoTotal: 180, costo: 90, numCuotas: 3, frecuenciaDias: 15, mesesAtras: 1, dia: 20, numPagadas: 1, metodoPago: "efectivo" }));
+
+  crearClienteSeed("cli-diego", { nombre: "Diego Salinas", telefono: "2145550233", creadoMesesAtras: 5 });
+  actualizarSaldoCliente("cli-diego", crearCuentaSeed("cli-diego", { articulo: "Bicicleta de montaña", montoTotal: 350, costo: 210, numCuotas: 5, frecuenciaDias: 15, mesesAtras: 5, dia: 15, numPagadas: 5, metodoPago: "efectivo" }));
+
+  crearClienteSeed("cli-carmen", { nombre: "Carmen Vega", telefono: "2145550256", creadoMesesAtras: 3 });
+  actualizarSaldoCliente("cli-carmen", crearCuentaSeed("cli-carmen", { articulo: "Microondas", montoTotal: 220, costo: 130, numCuotas: 2, frecuenciaDias: 20, mesesAtras: 3, dia: 25, numPagadas: 2, metodoPago: "tarjeta" }));
+}
+
+sembrarDatos();
+
+// ============================================================
+// utils.js
+// Helpers compartidos entre módulos: formato de dinero/fechas,
+// toast de notificación, debounce para el buscador, exportar CSV
+// y armar enlaces de WhatsApp.
+// ============================================================
+
+const MESES_CORTOS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+function formatoMoneda(valor) {
+  const n = Number(valor) || 0;
+  return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// Versión compacta para espacios chicos (gráficas): $1.2K en vez de $1,200.00
+function formatoMonedaCorta(valor) {
+  const n = Number(valor) || 0;
+  if (Math.abs(n) >= 1000) {
+    return "$" + (n / 1000).toLocaleString("en-US", { maximumFractionDigits: 1 }) + "K";
+  }
+  return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+}
+
+function formatoFecha(fechaISO) {
+  if (!fechaISO) return "—";
+  const [anio, mes, dia] = fechaISO.split("-").map(Number);
+  const fecha = new Date(anio, mes - 1, dia);
+  return fecha.toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function sumarDias(fechaISO, dias) {
+  const [anio, mes, dia] = fechaISO.split("-").map(Number);
+  const fecha = new Date(anio, mes - 1, dia);
+  fecha.setDate(fecha.getDate() + dias);
+  const y = fecha.getFullYear();
+  const m = String(fecha.getMonth() + 1).padStart(2, "0");
+  const d = String(fecha.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+// "Ago 26" a partir de un año y un mes 0-indexado
+function etiquetaMes(anio, mesIndex) {
+  return `${MESES_CORTOS[mesIndex]} ${String(anio).slice(2)}`;
+}
+
+// Últimos n meses (incluyendo el actual), del más viejo al más reciente.
+function ultimosMeses(n) {
+  const hoy = new Date();
+  const meses = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const f = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+    meses.push({
+      clave: `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, "0")}`,
+      anio: f.getFullYear(),
+      mes: f.getMonth()
+    });
+  }
+  return meses;
+}
+
+let toastTimeout = null;
+function mostrarToast(mensaje) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+  toast.textContent = mensaje;
+  toast.classList.add("mostrar");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove("mostrar"), 2600);
+}
+
+function debounce(fn, espera = 300) {
+  let temporizador = null;
+  return (...args) => {
+    clearTimeout(temporizador);
+    temporizador = setTimeout(() => fn(...args), espera);
+  };
+}
+
+// Descarga un reporte como CSV (Excel lo abre directamente). Se eligió CSV
+// y no un .xlsx real para no meter una librería externa al PWA: el stack
+// del proyecto es HTML/JS puro sin build step, y CSV con BOM UTF-8 abre
+// perfecto en Excel con acentos y todo.
+function descargarCSV(nombreArchivo, filas) {
+  const escapar = (v) => {
+    const s = String(v ?? "");
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const contenido = filas.map((fila) => fila.map(escapar).join(",")).join("\r\n");
+  const blob = new Blob(["﻿" + contenido], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nombreArchivo;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Descarga cualquier objeto como archivo .json — respaldo completo del
+// negocio (clientes, cuentas, cuotas, pagos), estructurado para poder
+// leerse o reimportarse a mano si algún día hace falta.
+function descargarJSON(nombreArchivo, datos) {
+  const blob = new Blob([JSON.stringify(datos, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nombreArchivo;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Arma un link de WhatsApp Click-to-Chat. Asume número de EE.UU./Canadá
+// (10 dígitos -> antepone "1"); si el teléfono ya trae lada internacional
+// completa, se manda tal cual.
+function urlWhatsApp(telefono, mensaje) {
+  const digitos = String(telefono || "").replace(/\D/g, "");
+  const numero = digitos.length === 10 ? "1" + digitos : digitos;
+  return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+}
+
+// ============================================================
+// charts.js
+// Gráfica de barras en SVG puro (sin librerías externas) para no
+// meter una dependencia nueva solo por una gráfica — encaja con
+// el stack "sin build step" del proyecto y funciona offline.
+// ============================================================
+
+function graficaBarras(contenedor, { etiquetas, valores, formateador = (v) => v }) {
+  const ancho = 320;
+  const alto = 170;
+  const margenInferior = 26;
+  const margenSuperior = 24;
+  const n = Math.max(1, valores.length);
+  const max = Math.max(1, ...valores.map((v) => Math.abs(v)));
+  const espacio = ancho / n;
+  const anchoBarra = Math.min(38, espacio * 0.5);
+
+  const barras = valores
+    .map((v, i) => {
+      const alturaDisponible = alto - margenInferior - margenSuperior;
+      const alturaBarra = Math.max((alturaDisponible * Math.abs(v)) / max, v === 0 ? 0 : 3);
+      const x = i * espacio + (espacio - anchoBarra) / 2;
+      const y = alto - margenInferior - alturaBarra;
+      return `
+        <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${anchoBarra.toFixed(1)}" height="${alturaBarra.toFixed(1)}" rx="4" class="barra-ganancia" />
+        <text x="${(x + anchoBarra / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" class="barra-valor">${formateador(v)}</text>
+        <text x="${(x + anchoBarra / 2).toFixed(1)}" y="${alto - 8}" text-anchor="middle" class="barra-etiqueta">${etiquetas[i] ?? ""}</text>
+      `;
+    })
+    .join("");
+
+  contenedor.innerHTML = `
+    <svg viewBox="0 0 ${ancho} ${alto}" class="grafica-svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Ganancia por mes">
+      <defs>
+        <linearGradient id="gradiente-barra-ganancia" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" class="grad-inicio" />
+          <stop offset="100%" class="grad-fin" />
+        </linearGradient>
+      </defs>
+      <line x1="0" y1="${alto - margenInferior}" x2="${ancho}" y2="${alto - margenInferior}" class="grafica-eje" />
+      ${barras}
+    </svg>
+  `;
+}
+
+// ============================================================
+// estado-cuenta.js
+// Arma el texto del estado de cuenta de un cliente (cuotas
+// pendientes por cuenta activa + saldo total). Lo usan tanto el
+// botón individual en el detalle de cliente como el envío masivo
+// (modules/clientes.js y modules/envios.js), para no duplicar la
+// misma lectura de Firestore en dos lugares.
+// ============================================================
+
+async function armarMensajeEstadoCuenta(clienteId) {
+  const clienteSnap = await getDoc(doc(db, "clientes", clienteId));
+  if (!clienteSnap.exists()) return null;
+  const cliente = clienteSnap.data();
+
+  const cuentasSnap = await getDocs(
+    query(collection(db, "clientes", clienteId, "cuentas"), where("estado", "==", "activa"))
+  );
+
+  const lineas = [];
+  for (const cuentaDoc of cuentasSnap.docs) {
+    const cuenta = cuentaDoc.data();
+    const cuotasSnap = await getDocs(
+      query(
+        collection(db, "clientes", clienteId, "cuentas", cuentaDoc.id, "cuotas"),
+        where("pagado", "==", false),
+        orderBy("numero")
+      )
+    );
+    if (cuotasSnap.empty) continue;
+    lineas.push(`*${cuenta.articulo}* (pendiente ${formatoMoneda(cuenta.saldoPendiente)}):`);
+    cuotasSnap.forEach((cuotaDoc) => {
+      const cuota = cuotaDoc.data();
+      lineas.push(`  Cuota ${cuota.numero}/${cuenta.numCuotas} — ${formatoMoneda(cuota.monto)} — vence ${formatoFecha(cuota.fechaVencimiento)}`);
+    });
+  }
+
+  return {
+    nombre: cliente.nombre || "",
+    telefono: cliente.telefono || "",
+    saldoPendiente: cliente.saldoPendiente || 0,
+    mensaje: [
+      `Hola ${cliente.nombre || ""}, este es tu estado de cuenta con Nene's Shopping USA:`,
+      "",
+      ...(lineas.length ? lineas : ["No tienes cuotas pendientes por ahora. ¡Gracias!"]),
+      "",
+      `Saldo total pendiente: ${formatoMoneda(cliente.saldoPendiente || 0)}`,
+      "",
+      "Gracias por tu preferencia."
+    ].join("\n")
+  };
+}
+
+// ============================================================
+// tema.js
+// Modo oscuro/claro. La preferencia se guarda en localStorage y
+// se aplica como atributo data-tema en <html>. El script inline en
+// el <head> de index.html ya la aplica antes de pintar (para no
+// parpadear); este módulo solo conecta el interruptor del menú.
+// ============================================================
+
+const CLAVE = "nenes-tema";
+
+function actualizarInterruptor(tema) {
+  const interruptor = document.getElementById("interruptor-tema");
+  const etiqueta = document.getElementById("etiqueta-tema");
+  if (interruptor) interruptor.checked = tema === "claro";
+  if (etiqueta) etiqueta.textContent = tema === "oscuro" ? "Modo oscuro" : "Modo claro";
+}
+
+function aplicarTema(tema) {
+  document.documentElement.dataset.tema = tema;
+  localStorage.setItem(CLAVE, tema);
+  actualizarInterruptor(tema);
+}
+
+function obtenerTema() {
+  return localStorage.getItem(CLAVE) || "oscuro";
+}
+
+function initTema() {
+  actualizarInterruptor(obtenerTema());
+  const interruptor = document.getElementById("interruptor-tema");
+  if (interruptor) {
+    interruptor.addEventListener("change", () => {
+      aplicarTema(interruptor.checked ? "claro" : "oscuro");
+    });
+  }
+}
+
+initTema();
+
+// ============================================================
+// modules/dashboard.js
+// KPIs generales (clientes, cuentas, saldo pendiente, inversión y
+// ganancia) más el desglose de ganancia por mes con gráfica, y la
+// descarga del reporte general en CSV.
+//
+// Clientes/cuentas activas/saldo usan consultas de agregación de
+// Firestore (count/sum) para no leer todo. La inversión, la
+// ganancia y el desglose mensual sí necesitan leer cada cuenta
+// (Firestore no soporta "group by" en agregaciones) — para un
+// negocio de este tamaño es aceptable; si el volumen de cuentas
+// crece mucho, convendría precalcular esto con una Cloud Function.
+// ============================================================
+
+function redondear2(n) {
+  return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+}
+
+// Los campos creadoEn son Timestamps de Firestore — no se sirven bien en
+// un .json (no tienen un valor legible por sí solos), así que se
+// convierten a ISO antes de exportar.
+function isoDeTimestamp(ts) {
+  return ts?.toDate ? ts.toDate().toISOString() : ts ?? null;
+}
+
+// Lee todas las cuentas (collectionGroup) y calcula inversión,
+// ganancia y ganancia agrupada por mes ("YYYY-MM" -> monto).
+// Las cuentas sin costo capturado no entran (no se puede saber su
+// ganancia).
+async function calcularFinanzas() {
+  const snap = await getDocs(collectionGroup(db, "cuentas"));
+  let inversionTotal = 0;
+  let gananciaTotal = 0;
+  const porMes = new Map();
+
+  snap.forEach((d) => {
+    const c = d.data();
+    if (c.costo == null || !c.creadoEn?.toDate) return;
+    const ganancia = redondear2((c.montoTotal || 0) - c.costo);
+    inversionTotal = redondear2(inversionTotal + c.costo);
+    gananciaTotal = redondear2(gananciaTotal + ganancia);
+
+    const fecha = c.creadoEn.toDate();
+    const clave = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}`;
+    porMes.set(clave, redondear2((porMes.get(clave) || 0) + ganancia));
+  });
+
+  return { inversionTotal, gananciaTotal, porMes };
+}
+
+function renderDashboard(container, user) {
+  const kpisEl = container.querySelector("#dashboard-kpis");
+  const clientesTotalEl = container.querySelector("#dashboard-clientes-total");
+  const cuentasTotalEl = container.querySelector("#dashboard-cuentas-total");
+  const versionEl = container.querySelector("#version-app");
+  const graficaEl = container.querySelector("#dashboard-grafica-ganancia");
+  const listaGananciaEl = container.querySelector("#dashboard-ganancia-lista");
+  const btnReporte = container.querySelector("#btn-descargar-reporte");
+  const btnExportar = container.querySelector("#btn-exportar-negocio");
+
+  versionEl.textContent = "1.1.0";
+
+  // se guarda el último cálculo para no repetir la lectura de cuentas
+  // cuando el usuario le da a "Descargar reporte" justo después de cargar
+  let ultimasFinanzas = null;
+
+  async function cargarDashboard() {
+    kpisEl.innerHTML = Array(6)
+      .fill('<div class="kpi-card"><div class="kpi-label">…</div><div class="kpi-valor">…</div></div>')
+      .join("");
+    graficaEl.innerHTML = "";
+    listaGananciaEl.innerHTML = "";
+
+    try {
+      const clientesRef = collection(db, "clientes");
+      const cuentasRef = collectionGroup(db, "cuentas");
+      const cuentasActivasQuery = query(cuentasRef, where("estado", "==", "activa"));
+
+      const [clientesCount, cuentasCount, cuentasActivasCount, saldoAgg, finanzas] = await Promise.all([
+        getCountFromServer(clientesRef),
+        getCountFromServer(cuentasRef),
+        getCountFromServer(cuentasActivasQuery),
+        getAggregateFromServer(clientesRef, { total: sum("saldoPendiente") }),
+        calcularFinanzas()
+      ]);
+
+      ultimasFinanzas = finanzas;
+
+      const totalClientes = clientesCount.data().count;
+      const totalCuentas = cuentasCount.data().count;
+      const cuentasActivas = cuentasActivasCount.data().count;
+      const saldoPendiente = saldoAgg.data().total || 0;
+
+      kpisEl.innerHTML = `
+        <div class="kpi-card"><div class="kpi-label">Clientes</div><div class="kpi-valor">${totalClientes}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Cuentas activas</div><div class="kpi-valor">${cuentasActivas}</div></div>
+        <div class="kpi-card kpi-card--alerta"><div class="kpi-label">Saldo pendiente</div><div class="kpi-valor">${formatoMoneda(saldoPendiente)}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Cuentas totales</div><div class="kpi-valor">${totalCuentas}</div></div>
+        <div class="kpi-card kpi-card--dorado"><div class="kpi-label">Inversión total</div><div class="kpi-valor">${formatoMoneda(finanzas.inversionTotal)}</div></div>
+        <div class="kpi-card kpi-card--exito"><div class="kpi-label">Ganancia total</div><div class="kpi-valor">${formatoMoneda(finanzas.gananciaTotal)}</div></div>
+      `;
+
+      clientesTotalEl.textContent = totalClientes;
+      cuentasTotalEl.textContent = `${cuentasActivas} / ${totalCuentas}`;
+
+      const meses = ultimosMeses(6);
+      const etiquetas = meses.map((m) => etiquetaMes(m.anio, m.mes));
+      const valores = meses.map((m) => finanzas.porMes.get(m.clave) || 0);
+
+      graficaBarras(graficaEl, { etiquetas, valores, formateador: formatoMonedaCorta });
+
+      listaGananciaEl.innerHTML = meses
+        .map((m, i) => `<div class="resumen-cuenta"><span>${etiquetaMes(m.anio, m.mes)}</span><strong>${formatoMoneda(valores[i])}</strong></div>`)
+        .join("");
+    } catch (err) {
+      console.error("Error cargando el dashboard:", err);
+      kpisEl.innerHTML = `<div class="kpi-card" style="grid-column:1/-1;">No se pudieron cargar los datos.</div>`;
+    }
+  }
+
+  btnReporte.addEventListener("click", async () => {
+    btnReporte.disabled = true;
+    btnReporte.textContent = "Generando…";
+    try {
+      const [clientesSnap, finanzas] = await Promise.all([
+        getDocs(query(collection(db, "clientes"), orderBy("nombreBusqueda"))),
+        ultimasFinanzas ? Promise.resolve(ultimasFinanzas) : calcularFinanzas()
+      ]);
+
+      const filasClientes = [];
+      clientesSnap.forEach((d) => {
+        const c = d.data();
+        filasClientes.push([c.nombre || "", c.telefono || "", (c.saldoPendiente || 0).toFixed(2)]);
+      });
+
+      const meses = ultimosMeses(6);
+      const filasGanancia = meses.map((m) => [etiquetaMes(m.anio, m.mes), (finanzas.porMes.get(m.clave) || 0).toFixed(2)]);
+
+      const filas = [
+        ["Reporte Nene's Shopping USA", new Date().toLocaleDateString("es-MX")],
+        [],
+        ["Clientes"],
+        ["Nombre", "Teléfono", "Saldo pendiente"],
+        ...filasClientes,
+        [],
+        ["Ganancia por mes"],
+        ["Mes", "Ganancia"],
+        ...filasGanancia,
+        [],
+        ["Resumen"],
+        ["Inversión total", finanzas.inversionTotal.toFixed(2)],
+        ["Ganancia total", finanzas.gananciaTotal.toFixed(2)]
+      ];
+
+      descargarCSV(`reporte-nenes-shopping-${new Date().toISOString().slice(0, 10)}.csv`, filas);
+      mostrarToast("Reporte descargado");
+    } catch (err) {
+      console.error("Error generando el reporte:", err);
+      mostrarToast("No se pudo generar el reporte");
+    } finally {
+      btnReporte.disabled = false;
+      btnReporte.textContent = "⬇ Descargar reporte (Excel / CSV)";
+    }
+  });
+
+  btnExportar.addEventListener("click", async () => {
+    btnExportar.disabled = true;
+    btnExportar.textContent = "Exportando…";
+    try {
+      const clientesSnap = await getDocs(collection(db, "clientes"));
+
+      const clientes = await Promise.all(
+        clientesSnap.docs.map(async (clienteDoc) => {
+          const cliente = clienteDoc.data();
+
+          const [cuentasSnap, pagosSnap] = await Promise.all([
+            getDocs(collection(db, "clientes", clienteDoc.id, "cuentas")),
+            getDocs(collection(db, "clientes", clienteDoc.id, "pagos"))
+          ]);
+
+          const cuentas = await Promise.all(
+            cuentasSnap.docs.map(async (cuentaDoc) => {
+              const cuotasSnap = await getDocs(collection(db, "clientes", clienteDoc.id, "cuentas", cuentaDoc.id, "cuotas"));
+              return {
+                id: cuentaDoc.id,
+                ...cuentaDoc.data(),
+                creadoEn: isoDeTimestamp(cuentaDoc.data().creadoEn),
+                cuotas: cuotasSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
+              };
+            })
+          );
+
+          return {
+            id: clienteDoc.id,
+            ...cliente,
+            creadoEn: isoDeTimestamp(cliente.creadoEn),
+            cuentas,
+            pagos: pagosSnap.docs.map((d) => ({ id: d.id, ...d.data(), creadoEn: isoDeTimestamp(d.data().creadoEn) }))
+          };
+        })
+      );
+
+      descargarJSON(`respaldo-nenes-shopping-${new Date().toISOString().slice(0, 10)}.json`, {
+        generadoEn: new Date().toISOString(),
+        negocio: "Nene's Shopping USA",
+        clientes
+      });
+      mostrarToast("Respaldo descargado");
+    } catch (err) {
+      console.error("Error exportando el respaldo:", err);
+      mostrarToast("No se pudo generar el respaldo");
+    } finally {
+      btnExportar.disabled = false;
+      btnExportar.textContent = "📦 Exportar respaldo completo (JSON)";
+    }
+  });
+
+  document.addEventListener("datos:cambiaron", cargarDashboard);
+  cargarDashboard();
+}
+
+// ============================================================
+// modules/clientes.js
+// Dueño de: lista de clientes (búsqueda + paginación), alta de
+// cliente, detalle de cliente (cuentas a cuotas), alta de cuenta
+// con generador de calendario de cuotas, y registro de pagos.
+// Todo lo relacionado a clientes/cuentas/cuotas vive aquí para no
+// tocar el código de otros módulos.
+// ============================================================
+
+const PAGE_SIZE = 10;
+const METODOS_PAGO = { efectivo: "Efectivo", transferencia: "Transferencia", tarjeta: "Tarjeta", otro: "Otro" };
+
+// ---- estado de lista/paginación ----
+let terminoBusqueda = "";
+let pageStarts = [null];
+let paginaActual = 0;
+let hayMasPaginas = false;
+
+// ---- estado de detalle de cliente ----
+let clienteActualId = null;
+let clienteActualData = null;
+let unsubListeners = [];
+
+// ---- estado del modal de pago ----
+let pagoContexto = null;
+
+// ---- estado del modal de editar cuenta ----
+let cuentaEditando = null;
+
+// asignada dentro de render(); irADetalle() la usa desde el router
+let abrirDetalleImpl = null;
+
+
+function avisarCambio() {
+  document.dispatchEvent(new CustomEvent("datos:cambiaron"));
+}
+
+function limpiarListeners() {
+  unsubListeners.forEach((unsub) => unsub());
+  unsubListeners = [];
+}
+
+function abrirModal(id) {
+  document.getElementById(id).classList.add("abierto");
+}
+
+function cerrarModal(id) {
+  document.getElementById(id).classList.remove("abierto");
+}
+
+// Borra la cuenta, sus cuotas, y descuenta lo que le quedaba pendiente
+// del saldo del cliente.
+async function eliminarCuenta(clienteId, cuentaId) {
+  const cuentaSnap = await getDoc(doc(db, "clientes", clienteId, "cuentas", cuentaId));
+  if (!cuentaSnap.exists()) return;
+  const saldo = cuentaSnap.data().saldoPendiente || 0;
+
+  const cuotasSnap = await getDocs(collection(db, "clientes", clienteId, "cuentas", cuentaId, "cuotas"));
+  const lote = writeBatch(db);
+  cuotasSnap.forEach((d) => lote.delete(d.ref));
+  lote.delete(doc(db, "clientes", clienteId, "cuentas", cuentaId));
+  if (saldo) lote.update(doc(db, "clientes", clienteId), { saldoPendiente: increment(-saldo) });
+  await lote.commit();
+}
+
+// Solo deja eliminar clientes sin cuentas, para no perder historial de
+// ventas/pagos por accidente. Si tiene cuentas, hay que borrarlas primero.
+async function eliminarCliente(clienteId) {
+  const cuentasSnap = await getDocs(collection(db, "clientes", clienteId, "cuentas"));
+  if (!cuentasSnap.empty) {
+    mostrarToast("No se puede eliminar: el cliente tiene cuentas registradas");
+    return false;
+  }
+  await deleteDoc(doc(db, "clientes", clienteId));
+  return true;
+}
+
+function renderClientes(container, user) {
+  const buscador = document.getElementById("buscador-clientes");
+  const listaEl = document.getElementById("lista-clientes");
+  const vacioEl = document.getElementById("clientes-vacio");
+  const btnAnterior = document.getElementById("btn-pag-anterior");
+  const btnSiguiente = document.getElementById("btn-pag-siguiente");
+  const btnNuevoCliente = document.getElementById("btn-nuevo-cliente");
+  const formNuevoCliente = document.getElementById("form-nuevo-cliente");
+
+  const dcNombre = document.getElementById("dc-nombre");
+  const dcTelefono = document.getElementById("dc-telefono");
+  const dcSaldo = document.getElementById("dc-saldo");
+  const dcNotasPanel = document.getElementById("dc-notas-panel");
+  const dcNotas = document.getElementById("dc-notas");
+  const cuentasClienteEl = document.getElementById("cuentas-cliente");
+  const btnToggleHistorial = document.getElementById("btn-toggle-historial");
+  const historialPagosEl = document.getElementById("historial-pagos");
+  const btnVolverCliente = document.getElementById("btn-volver-cliente");
+  const btnWhatsAppCliente = document.getElementById("btn-whatsapp-cliente");
+  const btnEditarCliente = document.getElementById("btn-editar-cliente");
+  const formEditarCliente = document.getElementById("form-editar-cliente");
+  const btnEliminarCliente = document.getElementById("btn-eliminar-cliente");
+  const btnNuevaCuenta = document.getElementById("btn-nueva-cuenta");
+  const formNuevaCuenta = document.getElementById("form-nueva-cuenta");
+  const generadorCuotas = document.getElementById("generador-cuotas");
+  const formEditarCuenta = document.getElementById("form-editar-cuenta");
+  const btnEliminarCuenta = document.getElementById("btn-eliminar-cuenta");
+
+  const formPago = document.getElementById("form-registrar-pago");
+  const pagoResumen = document.getElementById("pago-resumen");
+
+  // ---------------- Lista de clientes ----------------
+
+  function construirQuery(cursor) {
+    const clientesRef = collection(db, "clientes");
+    if (terminoBusqueda) {
+      const termino = terminoBusqueda.toLowerCase();
+      const constraints = [
+        orderBy("nombreBusqueda"),
+        where("nombreBusqueda", ">=", termino),
+        where("nombreBusqueda", "<=", termino + ""),
+        limit(PAGE_SIZE + 1)
+      ];
+      if (cursor) constraints.splice(3, 0, startAfter(cursor));
+      return query(clientesRef, ...constraints);
+    }
+    const constraints = [orderBy("nombreBusqueda"), limit(PAGE_SIZE + 1)];
+    if (cursor) constraints.splice(1, 0, startAfter(cursor));
+    return query(clientesRef, ...constraints);
+  }
+
+  function pintarClienteCard(id, cliente) {
+    const saldo = cliente.saldoPendiente || 0;
+    const div = document.createElement("div");
+    div.className = "cliente-card";
+    div.dataset.id = id;
+    div.innerHTML = `
+      <div class="cc-info">
+        <h4>${escaparHtml(cliente.nombre || "")}</h4>
+        <p>${escaparHtml(cliente.telefono || "Sin teléfono")}</p>
+      </div>
+      <div class="cc-saldo ${saldo <= 0 ? "al-dia" : ""}">${formatoMoneda(saldo)}</div>
+    `;
+    div.addEventListener("dblclick", () => {
+      location.hash = `#/clientes/${id}`;
+    });
+    return div;
+  }
+
+  async function cargarPagina(indice) {
+    listaEl.innerHTML = `<p style="color:var(--tinta-suave);font-size:0.85rem;">Cargando…</p>`;
+    try {
+      const snap = await getDocs(construirQuery(pageStarts[indice]));
+      const docs = snap.docs;
+      hayMasPaginas = docs.length > PAGE_SIZE;
+      const pagina = docs.slice(0, PAGE_SIZE);
+
+      listaEl.innerHTML = "";
+      if (pagina.length === 0) {
+        vacioEl.classList.remove("oculto");
+      } else {
+        vacioEl.classList.add("oculto");
+        pagina.forEach((d) => listaEl.appendChild(pintarClienteCard(d.id, d.data())));
+      }
+
+      if (hayMasPaginas) pageStarts[indice + 1] = pagina[pagina.length - 1];
+      paginaActual = indice;
+      btnAnterior.disabled = paginaActual === 0;
+      btnSiguiente.disabled = !hayMasPaginas;
+    } catch (err) {
+      console.error("Error cargando clientes:", err);
+      listaEl.innerHTML = `<p style="color:var(--peligro);font-size:0.85rem;">No se pudo cargar la lista.</p>`;
+    }
+  }
+
+  buscador.addEventListener(
+    "input",
+    debounce(() => {
+      terminoBusqueda = buscador.value.trim();
+      pageStarts = [null];
+      cargarPagina(0);
+    }, 350)
+  );
+
+  btnAnterior.addEventListener("click", () => {
+    if (paginaActual > 0) cargarPagina(paginaActual - 1);
+  });
+
+  btnSiguiente.addEventListener("click", () => {
+    if (hayMasPaginas) cargarPagina(paginaActual + 1);
+  });
+
+  document.addEventListener("datos:cambiaron", () => cargarPagina(paginaActual));
+
+  cargarPagina(0);
+
+  // ---------------- Alta de cliente ----------------
+
+  btnNuevoCliente.addEventListener("click", () => abrirModal("modal-nuevo-cliente"));
+
+  formNuevoCliente.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById("nc-nombre").value.trim();
+    const telefono = document.getElementById("nc-telefono").value.trim();
+    const direccion = document.getElementById("nc-direccion").value.trim();
+    const notas = document.getElementById("nc-notas").value.trim();
+    if (!nombre) return;
+
+    const btn = formNuevoCliente.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      await addDoc(collection(db, "clientes"), {
+        nombre,
+        nombreBusqueda: nombre.toLowerCase(),
+        telefono,
+        direccion,
+        notas,
+        saldoPendiente: 0,
+        creadoEn: serverTimestamp()
+      });
+      formNuevoCliente.reset();
+      cerrarModal("modal-nuevo-cliente");
+      mostrarToast("Cliente guardado");
+      pageStarts = [null];
+      cargarPagina(0);
+      avisarCambio();
+    } catch (err) {
+      console.error("Error guardando cliente:", err);
+      mostrarToast("No se pudo guardar el cliente");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // ---------------- Detalle de cliente ----------------
+
+  btnVolverCliente.addEventListener("click", () => {
+    limpiarListeners();
+    location.hash = "#/clientes";
+  });
+
+  btnToggleHistorial.addEventListener("click", () => {
+    const abierto = historialPagosEl.classList.toggle("oculto") === false;
+    btnToggleHistorial.textContent = abierto ? "▴" : "▾";
+  });
+
+  function pintarPago(pago) {
+    const div = document.createElement("div");
+    div.className = "pago-item";
+    div.innerHTML = `
+      <div class="pi-info"><strong>${escaparHtml(pago.articulo || "")}</strong>${pago.cuotaNumero ? ` · Cuota ${pago.cuotaNumero}` : ""} · ${formatoFecha(pago.fecha)}</div>
+      <div class="pi-monto">${formatoMoneda(pago.monto)} · ${METODOS_PAGO[pago.metodoPago] || pago.metodoPago}</div>
+    `;
+    return div;
+  }
+
+  btnWhatsAppCliente.addEventListener("click", async () => {
+    if (!clienteActualId) return;
+    btnWhatsAppCliente.disabled = true;
+    try {
+      const datos = await armarMensajeEstadoCuenta(clienteActualId);
+      if (!datos) return;
+      if (!datos.telefono) {
+        mostrarToast("Este cliente no tiene teléfono registrado");
+        return;
+      }
+      window.open(urlWhatsApp(datos.telefono, datos.mensaje), "_blank");
+    } catch (err) {
+      console.error("Error armando el estado de cuenta:", err);
+      mostrarToast("No se pudo preparar el estado de cuenta");
+    } finally {
+      btnWhatsAppCliente.disabled = false;
+    }
+  });
+
+  btnEditarCliente.addEventListener("click", () => {
+    if (!clienteActualId || !clienteActualData) return;
+    document.getElementById("ec-nombre").value = clienteActualData.nombre || "";
+    document.getElementById("ec-telefono").value = clienteActualData.telefono || "";
+    document.getElementById("ec-direccion").value = clienteActualData.direccion || "";
+    document.getElementById("ec-notas").value = clienteActualData.notas || "";
+    abrirModal("modal-editar-cliente");
+  });
+
+  formEditarCliente.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!clienteActualId) return;
+    const nombre = document.getElementById("ec-nombre").value.trim();
+    const telefono = document.getElementById("ec-telefono").value.trim();
+    const direccion = document.getElementById("ec-direccion").value.trim();
+    const notas = document.getElementById("ec-notas").value.trim();
+    if (!nombre) return;
+
+    const btn = formEditarCliente.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      await updateDoc(doc(db, "clientes", clienteActualId), {
+        nombre,
+        nombreBusqueda: nombre.toLowerCase(),
+        telefono,
+        direccion,
+        notas
+      });
+      cerrarModal("modal-editar-cliente");
+      mostrarToast("Cliente actualizado");
+      avisarCambio();
+    } catch (err) {
+      console.error("Error actualizando cliente:", err);
+      mostrarToast("No se pudo actualizar el cliente");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  btnEliminarCliente.addEventListener("click", async () => {
+    if (!clienteActualId) return;
+    const nombre = clienteActualData?.nombre || "este cliente";
+    if (!confirm(`¿Eliminar a ${nombre}? Esta acción no se puede deshacer.`)) return;
+
+    btnEliminarCliente.disabled = true;
+    try {
+      const eliminado = await eliminarCliente(clienteActualId);
+      if (eliminado) {
+        cerrarModal("modal-editar-cliente");
+        mostrarToast("Cliente eliminado");
+        limpiarListeners();
+        avisarCambio();
+        location.hash = "#/clientes";
+      }
+    } catch (err) {
+      console.error("Error eliminando cliente:", err);
+      mostrarToast("No se pudo eliminar el cliente");
+    } finally {
+      btnEliminarCliente.disabled = false;
+    }
+  });
+
+  function calcularCuotas({ montoTotal, numCuotas, fechaInicio, frecuenciaDias }) {
+    const montoCuota = redondear2(montoTotal / numCuotas);
+    const cuotas = [];
+    let acumulado = 0;
+    for (let i = 0; i < numCuotas; i++) {
+      const esUltima = i === numCuotas - 1;
+      const monto = esUltima ? redondear2(montoTotal - acumulado) : montoCuota;
+      acumulado = redondear2(acumulado + monto);
+      cuotas.push({
+        numero: i + 1,
+        fechaVencimiento: sumarDias(fechaInicio, i * frecuenciaDias),
+        monto
+      });
+    }
+    return cuotas;
+  }
+
+  function leerFormularioCuenta() {
+    const montoTotal = parseFloat(document.getElementById("nc2-monto-total").value);
+    const numCuotas = parseInt(document.getElementById("nc2-num-cuotas").value, 10);
+    const fechaInicio = document.getElementById("nc2-fecha-inicio").value;
+    const frecuenciaDias = parseInt(document.getElementById("nc2-frecuencia").value, 10);
+    if (!montoTotal || !numCuotas || !fechaInicio || montoTotal <= 0 || numCuotas <= 0) return null;
+    return { montoTotal, numCuotas, fechaInicio, frecuenciaDias };
+  }
+
+  function actualizarPreviewCuotas() {
+    const datos = leerFormularioCuenta();
+    if (!datos) {
+      generadorCuotas.innerHTML = "Completa monto, cuotas y fecha para ver el calendario.";
+      return;
+    }
+    const cuotas = calcularCuotas(datos);
+    generadorCuotas.innerHTML = cuotas
+      .map((c) => `<div class="gc-fila"><span>Cuota ${c.numero} · ${formatoFecha(c.fechaVencimiento)}</span><span>${formatoMoneda(c.monto)}</span></div>`)
+      .join("");
+  }
+
+  ["nc2-monto-total", "nc2-num-cuotas", "nc2-fecha-inicio", "nc2-frecuencia"].forEach((id) => {
+    document.getElementById(id).addEventListener("input", actualizarPreviewCuotas);
+  });
+
+  btnNuevaCuenta.addEventListener("click", () => {
+    if (!clienteActualId) return;
+    formNuevaCuenta.reset();
+    document.getElementById("nc2-fecha-inicio").valueAsDate = new Date();
+    actualizarPreviewCuotas();
+    abrirModal("modal-nueva-cuenta");
+  });
+
+  formNuevaCuenta.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!clienteActualId) return;
+    const datos = leerFormularioCuenta();
+    if (!datos) return;
+
+    const articulo = document.getElementById("nc2-articulo").value.trim();
+    const costoRaw = document.getElementById("nc2-costo").value;
+    const costo = costoRaw ? parseFloat(costoRaw) : null;
+    const cuotas = calcularCuotas(datos);
+
+    const btn = formNuevaCuenta.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      const cuentaRef = await addDoc(collection(db, "clientes", clienteActualId, "cuentas"), {
+        articulo,
+        montoTotal: datos.montoTotal,
+        costo,
+        numCuotas: datos.numCuotas,
+        fechaInicio: datos.fechaInicio,
+        frecuenciaDias: datos.frecuenciaDias,
+        montoCuota: redondear2(datos.montoTotal / datos.numCuotas),
+        saldoPendiente: datos.montoTotal,
+        estado: "activa",
+        creadoEn: serverTimestamp()
+      });
+
+      const lote = writeBatch(db);
+      cuotas.forEach((cuota) => {
+        const cuotaRef = doc(collection(db, "clientes", clienteActualId, "cuentas", cuentaRef.id, "cuotas"));
+        lote.set(cuotaRef, { ...cuota, pagado: false });
+      });
+      await lote.commit();
+
+      await updateDoc(doc(db, "clientes", clienteActualId), {
+        saldoPendiente: increment(datos.montoTotal)
+      });
+
+      formNuevaCuenta.reset();
+      cerrarModal("modal-nueva-cuenta");
+      mostrarToast("Cuenta creada");
+      avisarCambio();
+    } catch (err) {
+      console.error("Error guardando cuenta:", err);
+      mostrarToast("No se pudo guardar la cuenta");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  formEditarCuenta.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!cuentaEditando) return;
+    const articulo = document.getElementById("ecu-articulo").value.trim();
+    const costoRaw = document.getElementById("ecu-costo").value;
+    const costo = costoRaw ? parseFloat(costoRaw) : null;
+    if (!articulo) return;
+
+    const btn = formEditarCuenta.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      await updateDoc(doc(db, "clientes", cuentaEditando.clienteId, "cuentas", cuentaEditando.cuentaId), {
+        articulo,
+        costo
+      });
+      cerrarModal("modal-editar-cuenta");
+      mostrarToast("Cuenta actualizada");
+      avisarCambio();
+    } catch (err) {
+      console.error("Error actualizando cuenta:", err);
+      mostrarToast("No se pudo actualizar la cuenta");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  btnEliminarCuenta.addEventListener("click", async () => {
+    if (!cuentaEditando) return;
+    if (!confirm("¿Eliminar esta cuenta y todas sus cuotas? Esta acción no se puede deshacer.")) return;
+
+    btnEliminarCuenta.disabled = true;
+    try {
+      await eliminarCuenta(cuentaEditando.clienteId, cuentaEditando.cuentaId);
+      cerrarModal("modal-editar-cuenta");
+      mostrarToast("Cuenta eliminada");
+      cuentaEditando = null;
+      avisarCambio();
+    } catch (err) {
+      console.error("Error eliminando cuenta:", err);
+      mostrarToast("No se pudo eliminar la cuenta");
+    } finally {
+      btnEliminarCuenta.disabled = false;
+    }
+  });
+
+  function pintarCuota(clienteId, cuentaId, cuota) {
+    const div = document.createElement("div");
+    div.className = "cuota-item";
+    if (cuota.pagado) {
+      div.innerHTML = `
+        <div class="cu-info"><strong>Cuota ${cuota.numero}</strong> · ${formatoFecha(cuota.fechaVencimiento)}</div>
+        <div class="cuota-pagada">Pagada ✓</div>
+      `;
+    } else {
+      div.innerHTML = `
+        <div class="cu-info"><strong>Cuota ${cuota.numero}</strong> · ${formatoFecha(cuota.fechaVencimiento)} · <span class="cu-monto">${formatoMoneda(cuota.monto)}</span></div>
+        <button class="btn-pagar">Pagar</button>
+      `;
+      div.querySelector(".btn-pagar").addEventListener("click", () => {
+        pagoContexto = { clienteId, cuentaId, cuotaId: cuota.id, cuotaNumero: cuota.numero, monto: cuota.monto };
+        pagoResumen.textContent = `Cuota ${cuota.numero} — vence ${formatoFecha(cuota.fechaVencimiento)}`;
+        document.getElementById("pago-monto").value = cuota.monto;
+        abrirModal("modal-pago");
+      });
+    }
+    return div;
+  }
+
+  function pintarCuentaCard(clienteId, cuentaId, cuenta) {
+    const div = document.createElement("div");
+    div.className = "cuenta-card";
+    const pagado = redondear2(cuenta.montoTotal - cuenta.saldoPendiente);
+    const porcentaje = cuenta.montoTotal > 0 ? Math.min(100, Math.round((pagado / cuenta.montoTotal) * 100)) : 0;
+    div.innerHTML = `
+      <div class="ca-header">
+        <div>
+          <h4>${escaparHtml(cuenta.articulo || "Artículo")}</h4>
+          <div class="ca-fecha">Desde ${formatoFecha(cuenta.fechaInicio)}</div>
+        </div>
+        <div class="ca-header-acciones">
+          <span class="badge ${cuenta.estado === "pagada" ? "badge-pagada" : "badge-activa"}">${cuenta.estado === "pagada" ? "Pagada" : "Activa"}</span>
+          <button class="icon-btn-mini btn-editar-cuenta" title="Editar cuenta">✎</button>
+        </div>
+      </div>
+      <div class="progreso-barra"><div class="progreso-relleno" style="width:${porcentaje}%;"></div></div>
+      <div class="ca-montos">
+        <span>Pagado: <strong>${formatoMoneda(pagado)}</strong></span>
+        <span>Pendiente: <strong>${formatoMoneda(cuenta.saldoPendiente)}</strong></span>
+      </div>
+      <div class="lista-cuotas" id="cuotas-${cuentaId}"></div>
+    `;
+
+    div.querySelector(".btn-editar-cuenta").addEventListener("click", () => {
+      cuentaEditando = { clienteId, cuentaId };
+      document.getElementById("ecu-articulo").value = cuenta.articulo || "";
+      document.getElementById("ecu-costo").value = cuenta.costo ?? "";
+      abrirModal("modal-editar-cuenta");
+    });
+
+    const cuotasEl = div.querySelector(`#cuotas-${cuentaId}`);
+    const unsubCuotas = onSnapshot(
+      query(collection(db, "clientes", clienteId, "cuentas", cuentaId, "cuotas"), orderBy("numero")),
+      (snap) => {
+        cuotasEl.innerHTML = "";
+        snap.forEach((d) => cuotasEl.appendChild(pintarCuota(clienteId, cuentaId, { id: d.id, ...d.data() })));
+      }
+    );
+    unsubListeners.push(unsubCuotas);
+
+    return div;
+  }
+
+  abrirDetalleImpl = function abrirDetalle(clienteId) {
+    limpiarListeners();
+    clienteActualId = clienteId;
+    historialPagosEl.classList.add("oculto");
+    btnToggleHistorial.textContent = "▾";
+
+    const clienteRef = doc(db, "clientes", clienteId);
+    const unsubCliente = onSnapshot(clienteRef, (snap) => {
+      if (!snap.exists()) return;
+      const cliente = snap.data();
+      clienteActualData = cliente;
+      dcNombre.textContent = cliente.nombre || "—";
+      dcTelefono.textContent = cliente.telefono || "Sin teléfono";
+      dcSaldo.textContent = formatoMoneda(cliente.saldoPendiente || 0);
+      if (cliente.notas) {
+        dcNotas.textContent = cliente.notas;
+        dcNotasPanel.classList.remove("oculto");
+      } else {
+        dcNotasPanel.classList.add("oculto");
+      }
+    });
+    unsubListeners.push(unsubCliente);
+
+    const unsubCuentas = onSnapshot(
+      query(collection(db, "clientes", clienteId, "cuentas"), orderBy("creadoEn", "desc")),
+      (snap) => {
+        cuentasClienteEl.innerHTML = "";
+        if (snap.empty) {
+          cuentasClienteEl.innerHTML = `<div class="vacio"><div class="vacio-ico">🛍️</div><h3>Sin cuentas todavía</h3><p>Toca ＋ para registrar la primera compra a cuotas.</p></div>`;
+          return;
+        }
+        snap.forEach((d) => cuentasClienteEl.appendChild(pintarCuentaCard(clienteId, d.id, d.data())));
+      }
+    );
+    unsubListeners.push(unsubCuentas);
+
+    const unsubPagos = onSnapshot(
+      query(collection(db, "clientes", clienteId, "pagos"), orderBy("creadoEn", "desc"), limit(20)),
+      (snap) => {
+        if (snap.empty) {
+          historialPagosEl.innerHTML = `<p style="color:var(--tinta-suave);font-size:0.85rem;">Todavía no hay pagos registrados.</p>`;
+          return;
+        }
+        historialPagosEl.innerHTML = "";
+        snap.forEach((d) => historialPagosEl.appendChild(pintarPago(d.data())));
+      }
+    );
+    unsubListeners.push(unsubPagos);
+  };
+
+  // ---------------- Registrar pago ----------------
+
+  formPago.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!pagoContexto) return;
+    const monto = redondear2(parseFloat(document.getElementById("pago-monto").value));
+    const metodoPago = document.getElementById("pago-metodo").value;
+    if (!monto || monto <= 0) return;
+
+    const { clienteId, cuentaId, cuotaId, cuotaNumero } = pagoContexto;
+    const cuentaRef = doc(db, "clientes", clienteId, "cuentas", cuentaId);
+    const cuotaRef = doc(db, "clientes", clienteId, "cuentas", cuentaId, "cuotas", cuotaId);
+    const clienteRef = doc(db, "clientes", clienteId);
+    const pagoRef = doc(collection(db, "clientes", clienteId, "pagos"));
+
+    const btn = formPago.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      await runTransaction(db, async (tx) => {
+        const cuentaSnap = await tx.get(cuentaRef);
+        if (!cuentaSnap.exists()) throw new Error("Cuenta no encontrada");
+        const cuenta = cuentaSnap.data();
+        const nuevoSaldoCuenta = Math.max(0, redondear2((cuenta.saldoPendiente || 0) - monto));
+        const nuevoEstado = nuevoSaldoCuenta <= 0 ? "pagada" : "activa";
+
+        tx.update(cuotaRef, {
+          pagado: true,
+          fechaPago: new Date().toISOString().slice(0, 10),
+          metodoPago,
+          montoPagado: monto
+        });
+        tx.update(cuentaRef, { saldoPendiente: nuevoSaldoCuenta, estado: nuevoEstado });
+        tx.update(clienteRef, { saldoPendiente: increment(-monto) });
+
+        // Ficha del pago para el historial — no depende de la cuota (que
+        // solo guarda su último pago), así queda un registro permanente.
+        tx.set(pagoRef, {
+          cuentaId,
+          articulo: cuenta.articulo || "",
+          cuotaId,
+          cuotaNumero: cuotaNumero || null,
+          monto,
+          metodoPago,
+          fecha: new Date().toISOString().slice(0, 10),
+          creadoEn: serverTimestamp()
+        });
+      });
+
+      formPago.reset();
+      cerrarModal("modal-pago");
+      mostrarToast("Pago registrado");
+      pagoContexto = null;
+      avisarCambio();
+    } catch (err) {
+      console.error("Error registrando pago:", err);
+      mostrarToast("No se pudo registrar el pago");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // ---------------- Cierre genérico de modales ----------------
+
+  document.querySelectorAll("[data-cerrar-modal]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      btn.closest(".modal-fondo").classList.remove("abierto");
+    });
+  });
+
+  document.querySelectorAll(".modal-fondo").forEach((fondo) => {
+    fondo.addEventListener("click", (e) => {
+      if (e.target === fondo) fondo.classList.remove("abierto");
+    });
+  });
+}
+
+function clientesIrADetalle(clienteId) {
+  if (abrirDetalleImpl) abrirDetalleImpl(clienteId);
+}
+
+function escaparHtml(texto) {
+  const div = document.createElement("div");
+  div.textContent = texto;
+  return div.innerHTML;
+}
+
+// ============================================================
+// modules/envios.js
+// Envío masivo de estados de cuenta por WhatsApp.
+//
+// WhatsApp Click-to-Chat (wa.me) solo abre UN chat por clic, y los
+// navegadores bloquean ventanas abiertas por script sin que la
+// persona las inicie — automatizar el envío a varios números a la
+// vez violaría además los términos de WhatsApp y arriesga que los
+// números terminen marcados como spam. Por eso esto arma una fila
+// de clientes con saldo pendiente y deja un botón "Enviar" por
+// cliente: un clic = un chat abierto, para mandar rápido a todos
+// sin exponer los números a un envío automatizado.
+// ============================================================
+
+function renderEnvios(container, user) {
+  const listaEl = container.querySelector("#envios-lista");
+  const vacioEl = container.querySelector("#envios-vacio");
+  const btnTodos = container.querySelector("#btn-envios-todos");
+  const btnNinguno = container.querySelector("#btn-envios-ninguno");
+  const btnComenzar = container.querySelector("#btn-envios-comenzar");
+  const contadorEl = container.querySelector("#envios-contador");
+  const colaEl = container.querySelector("#envios-cola");
+
+  let clientesConSaldo = [];
+  let seleccionados = new Set();
+  let cola = null; // { ids, indice, enviados }
+
+  async function cargarClientes() {
+    listaEl.innerHTML = `<p style="color:var(--tinta-suave);font-size:0.85rem;">Cargando…</p>`;
+    colaEl.innerHTML = "";
+    cola = null;
+
+    try {
+      const snap = await getDocs(query(collection(db, "clientes"), orderBy("nombreBusqueda")));
+      clientesConSaldo = [];
+      snap.forEach((d) => {
+        const c = d.data();
+        if ((c.saldoPendiente || 0) > 0) clientesConSaldo.push({ id: d.id, ...c });
+      });
+      seleccionados = new Set(clientesConSaldo.filter((c) => c.telefono).map((c) => c.id));
+      pintarLista();
+    } catch (err) {
+      console.error("Error cargando clientes para envío masivo:", err);
+      listaEl.innerHTML = `<p style="color:var(--peligro);font-size:0.85rem;">No se pudo cargar la lista.</p>`;
+    }
+  }
+
+  function actualizarContador() {
+    contadorEl.textContent = `${seleccionados.size} de ${clientesConSaldo.length} seleccionados`;
+    btnComenzar.disabled = seleccionados.size === 0;
+  }
+
+  function pintarLista() {
+    if (clientesConSaldo.length === 0) {
+      listaEl.innerHTML = "";
+      vacioEl.classList.remove("oculto");
+      btnComenzar.disabled = true;
+      contadorEl.textContent = "";
+      return;
+    }
+    vacioEl.classList.add("oculto");
+
+    listaEl.innerHTML = clientesConSaldo
+      .map(
+        (c) => `
+      <label class="envio-item${c.telefono ? "" : " envio-item--sin-telefono"}">
+        <input type="checkbox" data-id="${c.id}" ${seleccionados.has(c.id) ? "checked" : ""} ${c.telefono ? "" : "disabled"}>
+        <span class="envio-info">
+          <strong>${escaparHtml(c.nombre || "")}</strong>
+          <small>${c.telefono ? escaparHtml(c.telefono) : "Sin teléfono — no se puede enviar"}</small>
+        </span>
+        <span class="envio-saldo">${formatoMoneda(c.saldoPendiente)}</span>
+      </label>`
+      )
+      .join("");
+
+    listaEl.querySelectorAll("input[type=checkbox]").forEach((chk) => {
+      chk.addEventListener("change", () => {
+        if (chk.checked) seleccionados.add(chk.dataset.id);
+        else seleccionados.delete(chk.dataset.id);
+        actualizarContador();
+      });
+    });
+    actualizarContador();
+  }
+
+  btnTodos.addEventListener("click", () => {
+    seleccionados = new Set(clientesConSaldo.filter((c) => c.telefono).map((c) => c.id));
+    pintarLista();
+  });
+
+  btnNinguno.addEventListener("click", () => {
+    seleccionados = new Set();
+    pintarLista();
+  });
+
+  function pintarCola() {
+    if (!cola) {
+      colaEl.innerHTML = "";
+      return;
+    }
+
+    if (cola.indice >= cola.ids.length) {
+      colaEl.innerHTML = `
+        <div class="vacio">
+          <div class="vacio-ico">✅</div>
+          <h3>Listo</h3>
+          <p>Se abrieron ${cola.enviados} de ${cola.ids.length} chats de WhatsApp.</p>
+        </div>`;
+      return;
+    }
+
+    const cliente = clientesConSaldo.find((c) => c.id === cola.ids[cola.indice]);
+    colaEl.innerHTML = `
+      <div class="panel envio-cola-panel">
+        <span class="etiqueta-panel">Envío ${cola.indice + 1} de ${cola.ids.length}</span>
+        <h3>${escaparHtml(cliente.nombre || "")}</h3>
+        <p style="color:var(--tinta-suave);font-size:0.85rem;margin:2px 0 14px;">${escaparHtml(cliente.telefono || "")} · Saldo ${formatoMoneda(cliente.saldoPendiente)}</p>
+        <button class="btn btn-whatsapp" id="btn-envio-actual">📲 Enviar a ${escaparHtml(cliente.nombre || "")}</button>
+        <button class="btn btn-reporte" id="btn-envio-saltar" style="margin-top:8px;">Saltar</button>
+      </div>`;
+
+    colaEl.querySelector("#btn-envio-actual").addEventListener("click", async () => {
+      const btn = colaEl.querySelector("#btn-envio-actual");
+      btn.disabled = true;
+      try {
+        const datos = await armarMensajeEstadoCuenta(cliente.id);
+        if (datos?.telefono) {
+          window.open(urlWhatsApp(datos.telefono, datos.mensaje), "_blank");
+          cola.enviados++;
+        }
+      } catch (err) {
+        console.error("Error preparando envío:", err);
+        mostrarToast("No se pudo preparar este envío");
+      } finally {
+        avanzarCola();
+      }
+    });
+
+    colaEl.querySelector("#btn-envio-saltar").addEventListener("click", avanzarCola);
+  }
+
+  function avanzarCola() {
+    cola.indice++;
+    pintarCola();
+  }
+
+  btnComenzar.addEventListener("click", () => {
+    if (seleccionados.size === 0) return;
+    cola = { ids: Array.from(seleccionados), indice: 0, enviados: 0 };
+    pintarCola();
+    colaEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  document.addEventListener("datos:cambiaron", cargarClientes);
+  cargarClientes();
+}
+
+
+// ============================================================
+// router.js
+// Router simple por hash (#/ruta). No recarga la página.
+// Cada módulo nuevo del proyecto se registra en MODULES abajo:
+// eso es lo único que hay que tocar para agregar una sección.
+//
+// A diferencia del boilerplate genérico, aquí las pantallas ya
+// vienen fijas en index.html (pantalla-dashboard, pantalla-clientes,
+// detalle-cliente) porque el diseño de Nene's Shopping USA las
+// define explícitamente. El router solo decide cuál mostrar y le
+// pasa el control de datos a cada módulo (que se inicializa una
+// sola vez y luego reacciona a Firestore por su cuenta).
+const MODULES = [
+  { path: "dashboard", pantallaId: "pantalla-dashboard" },
+  { path: "clientes", pantallaId: "pantalla-clientes" },
+  { path: "envios", pantallaId: "pantalla-envios" },
+  // { path: "reportes", pantallaId: "pantalla-reportes" },
+];
+
+const pantallas = MODULES.map((m) => document.getElementById(m.pantallaId));
+const detalleCliente = document.getElementById("detalle-cliente");
+const navItems = document.querySelectorAll(".nav-item");
+const btnMenus = document.querySelectorAll(".btn-menu");
+const btnCerrarMenu = document.getElementById("btn-cerrar-menu");
+const drawer = document.getElementById("menu-drawer");
+
+let currentUser = null;
+let inicializado = false;
+
+function ocultarTodas() {
+  pantallas.forEach((p) => p.classList.add("oculto"));
+  detalleCliente.classList.add("oculto");
+}
+
+function marcarNavActivo(pantallaId) {
+  navItems.forEach((btn) => {
+    btn.classList.toggle("activo", btn.dataset.pantalla === pantallaId);
+  });
+}
+
+function abrirDrawer() {
+  drawer.classList.add("abierto");
+}
+
+function cerrarDrawer() {
+  drawer.classList.remove("abierto");
+}
+
+function renderRoute() {
+  const hash = location.hash.replace("#/", "");
+  const [ruta, subId] = hash.split("/");
+
+  ocultarTodas();
+
+  if (ruta === "clientes" && subId) {
+    detalleCliente.classList.remove("oculto");
+    marcarNavActivo("pantalla-clientes");
+    clientesIrADetalle(subId);
+    return;
+  }
+
+  const mod = MODULES.find((m) => m.path === ruta) || MODULES[0];
+  document.getElementById(mod.pantallaId).classList.remove("oculto");
+  marcarNavActivo(mod.pantallaId);
+}
+
+function initRouter(user) {
+  currentUser = user;
+
+  if (!inicializado) {
+    renderDashboard(document.getElementById("pantalla-dashboard"), currentUser);
+    renderClientes(document.getElementById("pantalla-clientes"), currentUser);
+    renderEnvios(document.getElementById("pantalla-envios"), currentUser);
+
+    navItems.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const mod = MODULES.find((m) => m.pantallaId === btn.dataset.pantalla);
+        location.hash = `#/${mod ? mod.path : MODULES[0].path}`;
+        cerrarDrawer();
+      });
+    });
+
+    btnMenus.forEach((btn) => btn.addEventListener("click", abrirDrawer));
+    btnCerrarMenu.addEventListener("click", cerrarDrawer);
+    drawer.addEventListener("click", (e) => {
+      if (e.target === drawer) cerrarDrawer();
+    });
+
+    window.addEventListener("hashchange", renderRoute);
+    inicializado = true;
+  }
+
+  if (!location.hash) location.hash = `#/${MODULES[0].path}`;
+  renderRoute();
+}
+
+// ============================================================
+// auth.js
+// Maneja login, logout y el cambio de pantalla login <-> app-shell.
+// No mezclar lógica de negocio aquí: solo autenticación.
+// ============================================================
+
+const pantallaLogin = document.getElementById("pantalla-login");
+const appShell = document.getElementById("app-shell");
+const loginForm = document.getElementById("form-login");
+const loginError = document.getElementById("login-error");
+const loginBtn = loginForm.querySelector("button[type=submit]");
+const btnSalir = document.getElementById("btn-salir");
+
+function mostrarError(msg) {
+  loginError.textContent = msg;
+}
+
+function limpiarError() {
+  loginError.textContent = "";
+}
+
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  limpiarError();
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Entrando...";
+
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    // onAuthStateChanged se encarga de mostrar el app-shell
+  } catch (err) {
+    mostrarError(traducirErrorFirebase(err.code));
+  } finally {
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Entrar";
+  }
+});
+
+btnSalir.addEventListener("click", async () => {
+  await signOut(auth);
+});
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    pantallaLogin.classList.add("oculto");
+    appShell.classList.remove("oculto");
+    initRouter(user);
+  } else {
+    appShell.classList.add("oculto");
+    pantallaLogin.classList.remove("oculto");
+  }
+});
+
+function traducirErrorFirebase(code) {
+  const mapa = {
+    "auth/invalid-email": "Correo inválido.",
+    "auth/invalid-credential": "Correo o contraseña incorrectos.",
+    "auth/user-not-found": "Ese usuario no existe.",
+    "auth/wrong-password": "Contraseña incorrecta.",
+    "auth/too-many-requests": "Demasiados intentos. Espera unos minutos."
+  };
+  return mapa[code] || "No se pudo iniciar sesión. Intenta de nuevo.";
+}
+
+</script>
+</body>
+</html>
