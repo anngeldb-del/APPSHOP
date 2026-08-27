@@ -123,6 +123,7 @@
         <h2 id="dc-nombre">—</h2>
         <div class="sub" id="dc-telefono">—</div>
       </div>
+      <button class="icon-btn" id="btn-editar-cliente" title="Editar cliente">✎</button>
       <button class="icon-btn" id="btn-nueva-cuenta" title="Nueva cuenta">＋</button>
     </div>
     <div class="panel" style="text-align:center;">
@@ -231,6 +232,32 @@
   </div>
 </div>
 
+<!-- Editar cliente -->
+<div class="modal-fondo" id="modal-editar-cliente">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Editar cliente</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <form id="form-editar-cliente">
+      <div class="campo">
+        <label for="ec-nombre">Nombre completo</label>
+        <input type="text" id="ec-nombre" required>
+      </div>
+      <div class="campo">
+        <label for="ec-telefono">Teléfono</label>
+        <input type="tel" id="ec-telefono">
+      </div>
+      <div class="campo">
+        <label for="ec-direccion">Dirección</label>
+        <input type="text" id="ec-direccion">
+      </div>
+      <button type="submit" class="btn btn-primario">Guardar cambios</button>
+    </form>
+    <button type="button" class="btn btn-peligro" id="btn-eliminar-cliente" style="margin-top:10px;">Eliminar cliente</button>
+  </div>
+</div>
+
 <!-- Nueva cuenta (artículo a cuotas) -->
 <div class="modal-fondo" id="modal-nueva-cuenta">
   <div class="modal-caja">
@@ -271,6 +298,32 @@
       <div id="generador-cuotas"></div>
       <button type="submit" class="btn btn-primario" style="margin-top:8px;">Guardar cuenta</button>
     </form>
+  </div>
+</div>
+
+<!-- Editar cuenta -->
+<div class="modal-fondo" id="modal-editar-cuenta">
+  <div class="modal-caja">
+    <div class="modal-header">
+      <h3>Editar cuenta</h3>
+      <button class="icon-btn" data-cerrar-modal>✕</button>
+    </div>
+    <form id="form-editar-cuenta">
+      <div class="campo">
+        <label for="ecu-articulo">Artículo / accesorio</label>
+        <input type="text" id="ecu-articulo" required>
+      </div>
+      <div class="campo">
+        <label for="ecu-costo">Costo del artículo ($) — opcional, para calcular ganancia</label>
+        <input type="number" step="0.01" id="ecu-costo">
+      </div>
+      <p style="font-size:0.78rem;color:var(--tinta-suave);margin:-4px 0 12px;">
+        El monto total, número de cuotas y calendario no se editan aquí — si están mal,
+        elimina la cuenta y créala de nuevo.
+      </p>
+      <button type="submit" class="btn btn-primario">Guardar cambios</button>
+    </form>
+    <button type="button" class="btn btn-peligro" id="btn-eliminar-cuenta" style="margin-top:10px;">Eliminar cuenta</button>
   </div>
 </div>
 

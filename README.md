@@ -47,10 +47,10 @@ una cuenta o registrar un pago — no se recalcula leyendo todo cada vez.
   la ganancia y el desglose mensual se calculan leyendo cada cuenta en el cliente (Firestore
   no soporta "group by" en agregaciones) — para el volumen de un negocio así es aceptable;
   si crece mucho conviene precalcularlo con una Cloud Function.
-- `js/modules/clientes.js`: lista de clientes con búsqueda y paginación, alta de cliente,
-  detalle de cliente (cuentas + cuotas), alta de cuenta con generador de calendario de
-  cuotas, registro de pagos, y el envío del estado de cuenta al cliente por WhatsApp
-  (Click-to-Chat, sin backend adicional).
+- `js/modules/clientes.js`: lista de clientes con búsqueda y paginación, alta y edición de
+  cliente, detalle de cliente (cuentas + cuotas), alta y edición de cuenta con generador de
+  calendario de cuotas, registro de pagos, y el envío del estado de cuenta al cliente por
+  WhatsApp (Click-to-Chat, sin backend adicional).
 - `js/modules/envios.js`: envío masivo de estados de cuenta — lista a los clientes con
   saldo pendiente, dejas marcados a quién enviarle, y arma una fila para ir uno por uno.
 - `js/charts.js`: gráfica de barras en SVG puro, sin librerías externas.
@@ -82,6 +82,20 @@ una cuenta o registrar un pago — no se recalcula leyendo todo cada vez.
   lo abre la propia persona con un clic. Si más adelante quieres automatización real
   (recordatorios programados, sin intervención manual), eso ya requiere la API oficial de
   WhatsApp Business y un backend — es un cambio de stack que hay que platicar aparte.
+
+## Editar y eliminar
+
+- **Cliente** (detalle de cliente → ✎): edita nombre, teléfono y dirección. Eliminar solo
+  se permite si el cliente no tiene ninguna cuenta registrada — así no se puede borrar
+  historial de ventas/pagos sin querer; si tiene cuentas, hay que eliminarlas primero.
+- **Cuenta** (tarjeta de la cuenta → ✎): edita artículo y costo (para la ganancia). El
+  monto total, número de cuotas y el calendario no se editan ahí a propósito — cambiarlos
+  después de generadas las cuotas es ambiguo (¿se recalculan las que ya se pagaron?); si
+  están mal, se elimina la cuenta y se crea de nuevo. Eliminar una cuenta borra sus cuotas
+  y descuenta lo que le quedaba pendiente del saldo del cliente.
+
+Ambas eliminaciones piden confirmación (`confirm()` del navegador — nativo, sin componente
+nuevo) porque no se pueden deshacer.
 
 ## Cómo agregar un módulo nuevo
 

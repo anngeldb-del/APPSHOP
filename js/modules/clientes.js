@@ -13,6 +13,8 @@ import {
   doc,
   addDoc,
   updateDoc,
+  deleteDoc,
+  getDoc,
   getDocs,
   onSnapshot,
   query,
@@ -38,10 +40,14 @@ let hayMasPaginas = false;
 
 // ---- estado de detalle de cliente ----
 let clienteActualId = null;
+let clienteActualData = null;
 let unsubListeners = [];
 
 // ---- estado del modal de pago ----
 let pagoContexto = null;
+
+// ---- estado del modal de editar cuenta ----
+let cuentaEditando = null;
 
 // asignada dentro de render(); irADetalle() la usa desde el router
 let abrirDetalleImpl = null;
@@ -67,6 +73,33 @@ function cerrarModal(id) {
   document.getElementById(id).classList.remove("abierto");
 }
 
+// Borra la cuenta, sus cuotas, y descuenta lo que le quedaba pendiente
+// del saldo del cliente.
+async function eliminarCuenta(clienteId, cuentaId) {
+  const cuentaSnap = await getDoc(doc(db, "clientes", clienteId, "cuentas", cuentaId));
+  if (!cuentaSnap.exists()) return;
+  const saldo = cuentaSnap.data().saldoPendiente || 0;
+
+  const cuotasSnap = await getDocs(collection(db, "clientes", clienteId, "cuentas", cuentaId, "cuotas"));
+  const lote = writeBatch(db);
+  cuotasSnap.forEach((d) => lote.delete(d.ref));
+  lote.delete(doc(db, "clientes", clienteId, "cuentas", cuentaId));
+  if (saldo) lote.update(doc(db, "clientes", clienteId), { saldoPendiente: increment(-saldo) });
+  await lote.commit();
+}
+
+// Solo deja eliminar clientes sin cuentas, para no perder historial de
+// ventas/pagos por accidente. Si tiene cuentas, hay que borrarlas primero.
+async function eliminarCliente(clienteId) {
+  const cuentasSnap = await getDocs(collection(db, "clientes", clienteId, "cuentas"));
+  if (!cuentasSnap.empty) {
+    mostrarToast("No se puede eliminar: el cliente tiene cuentas registradas");
+    return false;
+  }
+  await deleteDoc(doc(db, "clientes", clienteId));
+  return true;
+}
+
 export function render(container, user) {
   const buscador = document.getElementById("buscador-clientes");
   const listaEl = document.getElementById("lista-clientes");
@@ -82,9 +115,14 @@ export function render(container, user) {
   const cuentasClienteEl = document.getElementById("cuentas-cliente");
   const btnVolverCliente = document.getElementById("btn-volver-cliente");
   const btnWhatsAppCliente = document.getElementById("btn-whatsapp-cliente");
+  const btnEditarCliente = document.getElementById("btn-editar-cliente");
+  const formEditarCliente = document.getElementById("form-editar-cliente");
+  const btnEliminarCliente = document.getElementById("btn-eliminar-cliente");
   const btnNuevaCuenta = document.getElementById("btn-nueva-cuenta");
   const formNuevaCuenta = document.getElementById("form-nueva-cuenta");
   const generadorCuotas = document.getElementById("generador-cuotas");
+  const formEditarCuenta = document.getElementById("form-editar-cuenta");
+  const btnEliminarCuenta = document.getElementById("btn-eliminar-cuenta");
 
   const formPago = document.getElementById("form-registrar-pago");
   const pagoResumen = document.getElementById("pago-resumen");
@@ -236,6 +274,65 @@ export function render(container, user) {
     }
   });
 
+  btnEditarCliente.addEventListener("click", () => {
+    if (!clienteActualId || !clienteActualData) return;
+    document.getElementById("ec-nombre").value = clienteActualData.nombre || "";
+    document.getElementById("ec-telefono").value = clienteActualData.telefono || "";
+    document.getElementById("ec-direccion").value = clienteActualData.direccion || "";
+    abrirModal("modal-editar-cliente");
+  });
+
+  formEditarCliente.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!clienteActualId) return;
+    const nombre = document.getElementById("ec-nombre").value.trim();
+    const telefono = document.getElementById("ec-telefono").value.trim();
+    const direccion = document.getElementById("ec-direccion").value.trim();
+    if (!nombre) return;
+
+    const btn = formEditarCliente.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      await updateDoc(doc(db, "clientes", clienteActualId), {
+        nombre,
+        nombreBusqueda: nombre.toLowerCase(),
+        telefono,
+        direccion
+      });
+      cerrarModal("modal-editar-cliente");
+      mostrarToast("Cliente actualizado");
+      avisarCambio();
+    } catch (err) {
+      console.error("Error actualizando cliente:", err);
+      mostrarToast("No se pudo actualizar el cliente");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  btnEliminarCliente.addEventListener("click", async () => {
+    if (!clienteActualId) return;
+    const nombre = clienteActualData?.nombre || "este cliente";
+    if (!confirm(`¿Eliminar a ${nombre}? Esta acción no se puede deshacer.`)) return;
+
+    btnEliminarCliente.disabled = true;
+    try {
+      const eliminado = await eliminarCliente(clienteActualId);
+      if (eliminado) {
+        cerrarModal("modal-editar-cliente");
+        mostrarToast("Cliente eliminado");
+        limpiarListeners();
+        avisarCambio();
+        location.hash = "#/clientes";
+      }
+    } catch (err) {
+      console.error("Error eliminando cliente:", err);
+      mostrarToast("No se pudo eliminar el cliente");
+    } finally {
+      btnEliminarCliente.disabled = false;
+    }
+  });
+
   function calcularCuotas({ montoTotal, numCuotas, fechaInicio, frecuenciaDias }) {
     const montoCuota = redondear2(montoTotal / numCuotas);
     const cuotas = [];
@@ -336,6 +433,51 @@ export function render(container, user) {
     }
   });
 
+  formEditarCuenta.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!cuentaEditando) return;
+    const articulo = document.getElementById("ecu-articulo").value.trim();
+    const costoRaw = document.getElementById("ecu-costo").value;
+    const costo = costoRaw ? parseFloat(costoRaw) : null;
+    if (!articulo) return;
+
+    const btn = formEditarCuenta.querySelector("button[type=submit]");
+    btn.disabled = true;
+    try {
+      await updateDoc(doc(db, "clientes", cuentaEditando.clienteId, "cuentas", cuentaEditando.cuentaId), {
+        articulo,
+        costo
+      });
+      cerrarModal("modal-editar-cuenta");
+      mostrarToast("Cuenta actualizada");
+      avisarCambio();
+    } catch (err) {
+      console.error("Error actualizando cuenta:", err);
+      mostrarToast("No se pudo actualizar la cuenta");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  btnEliminarCuenta.addEventListener("click", async () => {
+    if (!cuentaEditando) return;
+    if (!confirm("¿Eliminar esta cuenta y todas sus cuotas? Esta acción no se puede deshacer.")) return;
+
+    btnEliminarCuenta.disabled = true;
+    try {
+      await eliminarCuenta(cuentaEditando.clienteId, cuentaEditando.cuentaId);
+      cerrarModal("modal-editar-cuenta");
+      mostrarToast("Cuenta eliminada");
+      cuentaEditando = null;
+      avisarCambio();
+    } catch (err) {
+      console.error("Error eliminando cuenta:", err);
+      mostrarToast("No se pudo eliminar la cuenta");
+    } finally {
+      btnEliminarCuenta.disabled = false;
+    }
+  });
+
   function pintarCuota(clienteId, cuentaId, cuota) {
     const div = document.createElement("div");
     div.className = "cuota-item";
@@ -370,7 +512,10 @@ export function render(container, user) {
           <h4>${escaparHtml(cuenta.articulo || "Artículo")}</h4>
           <div class="ca-fecha">Desde ${formatoFecha(cuenta.fechaInicio)}</div>
         </div>
-        <span class="badge ${cuenta.estado === "pagada" ? "badge-pagada" : "badge-activa"}">${cuenta.estado === "pagada" ? "Pagada" : "Activa"}</span>
+        <div class="ca-header-acciones">
+          <span class="badge ${cuenta.estado === "pagada" ? "badge-pagada" : "badge-activa"}">${cuenta.estado === "pagada" ? "Pagada" : "Activa"}</span>
+          <button class="icon-btn-mini btn-editar-cuenta" title="Editar cuenta">✎</button>
+        </div>
       </div>
       <div class="progreso-barra"><div class="progreso-relleno" style="width:${porcentaje}%;"></div></div>
       <div class="ca-montos">
@@ -379,6 +524,13 @@ export function render(container, user) {
       </div>
       <div class="lista-cuotas" id="cuotas-${cuentaId}"></div>
     `;
+
+    div.querySelector(".btn-editar-cuenta").addEventListener("click", () => {
+      cuentaEditando = { clienteId, cuentaId };
+      document.getElementById("ecu-articulo").value = cuenta.articulo || "";
+      document.getElementById("ecu-costo").value = cuenta.costo ?? "";
+      abrirModal("modal-editar-cuenta");
+    });
 
     const cuotasEl = div.querySelector(`#cuotas-${cuentaId}`);
     const unsubCuotas = onSnapshot(
@@ -401,6 +553,7 @@ export function render(container, user) {
     const unsubCliente = onSnapshot(clienteRef, (snap) => {
       if (!snap.exists()) return;
       const cliente = snap.data();
+      clienteActualData = cliente;
       dcNombre.textContent = cliente.nombre || "—";
       dcTelefono.textContent = cliente.telefono || "Sin teléfono";
       dcSaldo.textContent = formatoMoneda(cliente.saldoPendiente || 0);

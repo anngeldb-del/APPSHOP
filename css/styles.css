@@ -201,6 +201,13 @@ input, select { font-family: inherit; }
 }
 .btn-reporte:hover { border-color: var(--dorado); }
 
+.btn-peligro {
+  background: transparent;
+  color: var(--rojo);
+  border: 1px solid var(--rojo);
+}
+.btn-peligro:hover { background: rgba(255, 45, 77, 0.1); }
+
 .error-msg {
   color: var(--peligro);
   font-size: 0.78rem;
@@ -478,8 +485,25 @@ input, select { font-family: inherit; }
   margin-bottom: 8px;
 }
 
+.ca-header-acciones { display: flex; align-items: center; gap: 8px; }
+
 .cuenta-card h4 { font-size: 1rem; }
 .cuenta-card .ca-fecha { font-size: 0.75rem; color: var(--tinta-suave); }
+
+.icon-btn-mini {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--superficie-alt);
+  border: 1px solid var(--borde);
+  color: var(--tinta-suave);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.icon-btn-mini:hover { color: var(--tinta); border-color: var(--rojo); }
 
 .badge {
   font-size: 0.66rem;
