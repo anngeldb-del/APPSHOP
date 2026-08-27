@@ -8,6 +8,18 @@ cuotas y sus pagos. Firebase Auth + Firestore como backend. Desarrollado por Cod
 `demo/index.html` es un archivo único, autocontenido, con datos de ejemplo y sin
 dependencias — se puede mandar tal cual para que alguien la pruebe. Ver `demo/README.md`.
 
+## Marca
+
+`assets/logo-nenes.png` (solo la bolsa, para íconos chicos), `assets/logo-nenes-completo.png`
+(bolsa + wordmark, para el login) y `assets/logo-codereset.png` (el triángulo, chico, para el
+crédito del desarrollador) salen de los logos que mandó Angel — se les quitó el fondo con
+flood-fill desde los bordes (no un umbral de color simple, para no perforar el interior oscuro
+del triángulo de Code-Reset) y se redujeron de tamaño para no pesarle a la PWA. Si el logo
+cambia, hay que repetir ese proceso — no son solo un recorte a mano.
+
+`assets/icon-192.png` y `assets/icon-512.png` (el ícono que se instala en el celular) ya usan
+la bolsa de Nene's Shopping sobre fondo blanco, no el genérico de Code-Reset del boilerplate.
+
 ## Antes de usarla en producción
 
 1. Crear el proyecto en Firebase Console (Auth con método Correo/Contraseña + Firestore).
