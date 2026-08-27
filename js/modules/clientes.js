@@ -13,6 +13,7 @@ import {
   doc,
   addDoc,
   updateDoc,
+  getDoc,
   getDocs,
   onSnapshot,
   query,
@@ -25,7 +26,7 @@ import {
   writeBatch,
   runTransaction
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { formatoMoneda, formatoFecha, sumarDias, mostrarToast, debounce } from "../utils.js";
+import { formatoMoneda, formatoFecha, sumarDias, mostrarToast, debounce, urlWhatsApp } from "../utils.js";
 
 const PAGE_SIZE = 10;
 
@@ -80,6 +81,7 @@ export function render(container, user) {
   const dcSaldo = document.getElementById("dc-saldo");
   const cuentasClienteEl = document.getElementById("cuentas-cliente");
   const btnVolverCliente = document.getElementById("btn-volver-cliente");
+  const btnWhatsAppCliente = document.getElementById("btn-whatsapp-cliente");
   const btnNuevaCuenta = document.getElementById("btn-nueva-cuenta");
   const formNuevaCuenta = document.getElementById("form-nueva-cuenta");
   const generadorCuotas = document.getElementById("generador-cuotas");
@@ -213,6 +215,66 @@ export function render(container, user) {
   btnVolverCliente.addEventListener("click", () => {
     limpiarListeners();
     location.hash = "#/clientes";
+  });
+
+  async function armarMensajeEstadoCuenta(clienteId) {
+    const clienteSnap = await getDoc(doc(db, "clientes", clienteId));
+    if (!clienteSnap.exists()) return null;
+    const cliente = clienteSnap.data();
+
+    const cuentasSnap = await getDocs(
+      query(collection(db, "clientes", clienteId, "cuentas"), where("estado", "==", "activa"))
+    );
+
+    const lineas = [];
+    for (const cuentaDoc of cuentasSnap.docs) {
+      const cuenta = cuentaDoc.data();
+      const cuotasSnap = await getDocs(
+        query(
+          collection(db, "clientes", clienteId, "cuentas", cuentaDoc.id, "cuotas"),
+          where("pagado", "==", false),
+          orderBy("numero")
+        )
+      );
+      if (cuotasSnap.empty) continue;
+      lineas.push(`*${cuenta.articulo}* (pendiente ${formatoMoneda(cuenta.saldoPendiente)}):`);
+      cuotasSnap.forEach((cuotaDoc) => {
+        const cuota = cuotaDoc.data();
+        lineas.push(`  Cuota ${cuota.numero}/${cuenta.numCuotas} — ${formatoMoneda(cuota.monto)} — vence ${formatoFecha(cuota.fechaVencimiento)}`);
+      });
+    }
+
+    return {
+      telefono: cliente.telefono,
+      mensaje: [
+        `Hola ${cliente.nombre || ""}, este es tu estado de cuenta con Nene's Shopping USA:`,
+        "",
+        ...(lineas.length ? lineas : ["No tienes cuotas pendientes por ahora. ¡Gracias!"]),
+        "",
+        `Saldo total pendiente: ${formatoMoneda(cliente.saldoPendiente || 0)}`,
+        "",
+        "Gracias por tu preferencia."
+      ].join("\n")
+    };
+  }
+
+  btnWhatsAppCliente.addEventListener("click", async () => {
+    if (!clienteActualId) return;
+    btnWhatsAppCliente.disabled = true;
+    try {
+      const datos = await armarMensajeEstadoCuenta(clienteActualId);
+      if (!datos) return;
+      if (!datos.telefono) {
+        mostrarToast("Este cliente no tiene teléfono registrado");
+        return;
+      }
+      window.open(urlWhatsApp(datos.telefono, datos.mensaje), "_blank");
+    } catch (err) {
+      console.error("Error armando el estado de cuenta:", err);
+      mostrarToast("No se pudo preparar el estado de cuenta");
+    } finally {
+      btnWhatsAppCliente.disabled = false;
+    }
   });
 
   function calcularCuotas({ montoTotal, numCuotas, fechaInicio, frecuenciaDias }) {

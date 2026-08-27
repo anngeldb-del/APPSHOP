@@ -5,9 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>Nene's Shopping USA · Cuentas y Cuotas</title>
 
+<!-- Aplica el tema guardado antes de pintar, para evitar el parpadeo
+     de un tema equivocado al cargar (ver js/tema.js). -->
+<script>
+  document.documentElement.dataset.tema = localStorage.getItem("nenes-tema") || "oscuro";
+</script>
+
 <!-- PWA: instalable en Android / iPhone / Windows -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#C4272B">
+<meta name="theme-color" content="#0A0A0C">
 <link rel="apple-touch-icon" href="assets/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -53,19 +59,33 @@
   <!-- ---- Dashboard ---- -->
   <section id="pantalla-dashboard" class="pantalla">
     <div class="topbar">
+      <button class="icon-btn btn-menu" title="Menú">☰</button>
       <div>
         <h2>Dashboard</h2>
         <div class="sub">Nene's Shopping USA</div>
       </div>
-      <button class="icon-btn" id="btn-salir" title="Cerrar sesión">⏻</button>
     </div>
+
     <div class="grid-kpi" id="dashboard-kpis"></div>
+
     <div class="panel">
       <h3>Resumen general</h3>
       <div class="resumen-cuenta"><span>Clientes registrados</span><strong id="dashboard-clientes-total">0</strong></div>
       <div class="resumen-cuenta"><span>Cuentas activas / totales</span><strong id="dashboard-cuentas-total">0</strong></div>
     </div>
-    <div style="text-align:center;color:var(--rojo-suave);font-size:11px;margin-top:8px;">
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Ganancia por mes</h3>
+        <span class="etiqueta-panel">Últimos 6 meses</span>
+      </div>
+      <div id="dashboard-grafica-ganancia" class="grafica-contenedor"></div>
+      <div id="dashboard-ganancia-lista" class="ganancia-lista"></div>
+    </div>
+
+    <button class="btn btn-reporte" id="btn-descargar-reporte">⬇ Descargar reporte (Excel / CSV)</button>
+
+    <div style="text-align:center;color:var(--tinta-suave);font-size:11px;margin-top:14px;">
       Versión <span id="version-app"></span>
     </div>
   </section>
@@ -73,7 +93,8 @@
   <!-- ---- Clientes ---- -->
   <section id="pantalla-clientes" class="pantalla oculto">
     <div class="topbar">
-      <div>
+      <button class="icon-btn btn-menu" title="Menú">☰</button>
+      <div style="flex:1;">
         <h2>Clientes</h2>
         <div class="sub">Doble tap en una tarjeta para abrirla</div>
       </div>
@@ -106,18 +127,48 @@
     </div>
     <div class="panel" style="text-align:center;">
       <div class="kpi-label">Saldo total pendiente</div>
-      <div class="kpi-valor" style="font-size:26px;color:var(--rojo-primario);" id="dc-saldo">$0.00</div>
+      <div class="kpi-valor kpi-valor-grande" id="dc-saldo">$0.00</div>
+      <button class="btn btn-whatsapp" id="btn-whatsapp-cliente">📲 Enviar estado de cuenta por WhatsApp</button>
     </div>
     <div id="cuentas-cliente"></div>
   </section>
 
-  <!-- ---- Nav inferior ---- -->
-  <nav class="nav-inferior">
-    <button class="nav-item activo" data-pantalla="pantalla-dashboard">
+</div>
+
+<!-- ================= MENÚ ================= -->
+<div class="drawer-fondo" id="menu-drawer">
+  <nav class="drawer-caja">
+    <div class="drawer-header">
+      <div class="drawer-marca">
+        <div class="drawer-icono">S</div>
+        <div>
+          <div class="drawer-titulo">Nene's Shopping USA</div>
+          <div class="drawer-sub">Cuentas y cuotas</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="btn-cerrar-menu" title="Cerrar">✕</button>
+    </div>
+
+    <button class="drawer-item nav-item activo" data-pantalla="pantalla-dashboard">
       <span class="nav-ico">📊</span>Dashboard
     </button>
-    <button class="nav-item" data-pantalla="pantalla-clientes">
+    <button class="drawer-item nav-item" data-pantalla="pantalla-clientes">
       <span class="nav-ico">🧾</span>Clientes
+    </button>
+
+    <div class="drawer-separador"></div>
+
+    <label class="drawer-item drawer-tema" for="interruptor-tema">
+      <span class="nav-ico">🌓</span>
+      <span id="etiqueta-tema">Modo oscuro</span>
+      <span class="interruptor">
+        <input type="checkbox" id="interruptor-tema">
+        <span class="interruptor-riel"></span>
+      </span>
+    </label>
+
+    <button class="drawer-item drawer-salir" id="btn-salir">
+      <span class="nav-ico">⏻</span>Cerrar sesión
     </button>
   </nav>
 </div>

@@ -11,9 +11,10 @@ cuotas y sus pagos. Firebase Auth + Firestore como backend. Desarrollado por Cod
 3. Crear en Firebase Auth los usuarios del personal que va a usar la app (no hay registro
    público, solo login).
 4. Desplegar `firestore.rules` y `firestore.indexes.json` (Firebase Console, o `firebase
-   deploy --only firestore:rules,firestore:indexes` con Firebase CLI). El índice de
-   `estado` en `cuentas` es necesario porque el dashboard hace una consulta de grupo de
-   colecciones (`collectionGroup`) filtrando por ese campo.
+   deploy --only firestore:rules,firestore:indexes` con Firebase CLI). Los índices son
+   necesarios porque el dashboard hace consultas de grupo de colecciones
+   (`collectionGroup`) sobre `cuentas`, y el envío de estado de cuenta por WhatsApp filtra
+   `cuotas` pendientes ordenadas por número.
 5. Activar GitHub Pages (Settings → Pages → rama `main`, carpeta `/root`) o el hosting que
    se use para desplegar.
 6. Subir `CACHE_VERSION` en `service-worker.js` cada vez que se toque el shell base
@@ -40,10 +41,32 @@ una cuenta o registrar un pago — no se recalcula leyendo todo cada vez.
 ## Módulos
 
 - `js/modules/dashboard.js`: KPIs generales (clientes, cuentas activas/totales, saldo
-  pendiente) usando consultas de agregación (`getCountFromServer` / `getAggregateFromServer`).
+  pendiente, inversión y ganancia totales) usando consultas de agregación
+  (`getCountFromServer` / `getAggregateFromServer`), más el desglose de ganancia de los
+  últimos 6 meses (gráfica + lista) y la descarga del reporte general en CSV. La inversión,
+  la ganancia y el desglose mensual se calculan leyendo cada cuenta en el cliente (Firestore
+  no soporta "group by" en agregaciones) — para el volumen de un negocio así es aceptable;
+  si crece mucho conviene precalcularlo con una Cloud Function.
 - `js/modules/clientes.js`: lista de clientes con búsqueda y paginación, alta de cliente,
   detalle de cliente (cuentas + cuotas), alta de cuenta con generador de calendario de
-  cuotas, y registro de pagos.
+  cuotas, registro de pagos, y el envío del estado de cuenta al cliente por WhatsApp
+  (Click-to-Chat, sin backend adicional).
+- `js/charts.js`: gráfica de barras en SVG puro, sin librerías externas.
+- `js/tema.js`: modo oscuro/claro con preferencia guardada en `localStorage`; el `<head>`
+  de `index.html` aplica el tema antes de pintar para no parpadear.
+- `js/utils.js`: formato de dinero/fechas, toast, debounce, exportar CSV y armar enlaces de
+  WhatsApp.
+
+## Reportes y WhatsApp
+
+- **Reporte (Dashboard → "Descargar reporte")**: genera un CSV con la lista de clientes y
+  su saldo, la ganancia de los últimos 6 meses, e inversión/ganancia totales. Se eligió CSV
+  (con BOM UTF-8, abre directo en Excel) y no un `.xlsx` real para no meter una librería
+  externa al PWA — el stack del proyecto es HTML/JS puro sin build step.
+- **Estado de cuenta por WhatsApp (detalle de cliente)**: arma un mensaje con las cuotas
+  pendientes de cada cuenta activa y abre `wa.me` con el texto precargado. Asume números de
+  EE.UU./Canadá (antepone "1" a números de 10 dígitos); si se opera en otro país hay que
+  ajustar `urlWhatsApp()` en `js/utils.js`.
 
 ## Cómo agregar un módulo nuevo
 

@@ -22,6 +22,9 @@ import { render as renderClientes, irADetalle as clientesIrADetalle } from "./mo
 const pantallas = MODULES.map((m) => document.getElementById(m.pantallaId));
 const detalleCliente = document.getElementById("detalle-cliente");
 const navItems = document.querySelectorAll(".nav-item");
+const btnMenus = document.querySelectorAll(".btn-menu");
+const btnCerrarMenu = document.getElementById("btn-cerrar-menu");
+const drawer = document.getElementById("menu-drawer");
 
 let currentUser = null;
 let inicializado = false;
@@ -35,6 +38,14 @@ function marcarNavActivo(pantallaId) {
   navItems.forEach((btn) => {
     btn.classList.toggle("activo", btn.dataset.pantalla === pantallaId);
   });
+}
+
+function abrirDrawer() {
+  drawer.classList.add("abierto");
+}
+
+function cerrarDrawer() {
+  drawer.classList.remove("abierto");
 }
 
 function renderRoute() {
@@ -66,7 +77,14 @@ export function initRouter(user) {
       btn.addEventListener("click", () => {
         const mod = MODULES.find((m) => m.pantallaId === btn.dataset.pantalla);
         location.hash = `#/${mod ? mod.path : MODULES[0].path}`;
+        cerrarDrawer();
       });
+    });
+
+    btnMenus.forEach((btn) => btn.addEventListener("click", abrirDrawer));
+    btnCerrarMenu.addEventListener("click", cerrarDrawer);
+    drawer.addEventListener("click", (e) => {
+      if (e.target === drawer) cerrarDrawer();
     });
 
     window.addEventListener("hashchange", renderRoute);

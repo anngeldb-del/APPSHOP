@@ -4,6 +4,7 @@
 // que a su vez arranca el router una vez que hay sesión.
 // ============================================================
 
+import "./tema.js";
 import "./auth.js";
 
 if ("serviceWorker" in navigator) {
