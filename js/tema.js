@@ -8,6 +8,31 @@
 
 const CLAVE = "nenes-tema";
 
+// Algunos visores de archivos (p. ej. el de WhatsApp/Telegram al abrir
+// un .html adjunto) cargan la página en un origen aislado donde el
+// navegador bloquea localStorage por completo (lanza SecurityError).
+// Sin este blindaje, ese error detiene TODO el script — incluido el
+// código que conecta el botón de login más abajo. Con el try/catch,
+// el tema simplemente no se recuerda ahí, pero el resto de la app sigue
+// funcionando. respaldo es la copia en memoria para esa sesión.
+let respaldoTema = "oscuro";
+
+function guardarTema(tema) {
+  try {
+    localStorage.setItem(CLAVE, tema);
+  } catch (_) {
+    respaldoTema = tema;
+  }
+}
+
+function leerTema() {
+  try {
+    return localStorage.getItem(CLAVE) || "oscuro";
+  } catch (_) {
+    return respaldoTema;
+  }
+}
+
 function actualizarInterruptor(tema) {
   const interruptor = document.getElementById("interruptor-tema");
   const etiqueta = document.getElementById("etiqueta-tema");
@@ -17,12 +42,12 @@ function actualizarInterruptor(tema) {
 
 function aplicarTema(tema) {
   document.documentElement.dataset.tema = tema;
-  localStorage.setItem(CLAVE, tema);
+  guardarTema(tema);
   actualizarInterruptor(tema);
 }
 
 function obtenerTema() {
-  return localStorage.getItem(CLAVE) || "oscuro";
+  return leerTema();
 }
 
 function initTema() {

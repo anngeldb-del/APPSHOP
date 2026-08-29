@@ -158,13 +158,22 @@ function irAPaso(indice) {
   }, espera);
 }
 
+// Igual que en tema.js: en visores de archivos con origen aislado
+// (WhatsApp/Telegram al abrir un .html adjunto) localStorage lanza
+// SecurityError. Sin este blindaje, ese error corta la ejecución del
+// resto del script. respaldoVisto cubre esa sesión mientras tanto.
+let respaldoVisto = false;
+
 function cerrarTour() {
   window.removeEventListener("resize", reposicionarActual);
   if (overlay) overlay.remove();
   overlay = null;
   const drawer = document.getElementById("menu-drawer");
   if (drawer) drawer.classList.remove("abierto");
-  localStorage.setItem(CLAVE_TOUR, "1");
+  respaldoVisto = true;
+  try {
+    localStorage.setItem(CLAVE_TOUR, "1");
+  } catch (_) {}
 }
 
 export function iniciarTour() {
@@ -174,5 +183,9 @@ export function iniciarTour() {
 }
 
 export function iniciarTourSiEsPrimeraVez() {
-  if (!localStorage.getItem(CLAVE_TOUR)) iniciarTour();
+  let visto = respaldoVisto;
+  try {
+    visto = respaldoVisto || Boolean(localStorage.getItem(CLAVE_TOUR));
+  } catch (_) {}
+  if (!visto) iniciarTour();
 }

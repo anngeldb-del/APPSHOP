@@ -8,7 +8,11 @@
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjRkYyRDREIi8+PHRleHQgeD0iNTAiIHk9IjcwIiBmb250LXNpemU9IjU4IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlM8L3RleHQ+PC9zdmc+">
 
 <script>
-  document.documentElement.dataset.tema = localStorage.getItem("nenes-tema") || "oscuro";
+  try {
+    document.documentElement.dataset.tema = localStorage.getItem("nenes-tema") || "oscuro";
+  } catch (_) {
+    document.documentElement.dataset.tema = "oscuro";
+  }
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1894,6 +1898,31 @@ async function armarMensajeEstadoCuenta(clienteId) {
 
 const CLAVE = "nenes-tema";
 
+// Algunos visores de archivos (p. ej. el de WhatsApp/Telegram al abrir
+// un .html adjunto) cargan la página en un origen aislado donde el
+// navegador bloquea localStorage por completo (lanza SecurityError).
+// Sin este blindaje, ese error detiene TODO el script — incluido el
+// código que conecta el botón de login más abajo. Con el try/catch,
+// el tema simplemente no se recuerda ahí, pero el resto de la app sigue
+// funcionando. respaldo es la copia en memoria para esa sesión.
+let respaldoTema = "oscuro";
+
+function guardarTema(tema) {
+  try {
+    localStorage.setItem(CLAVE, tema);
+  } catch (_) {
+    respaldoTema = tema;
+  }
+}
+
+function leerTema() {
+  try {
+    return localStorage.getItem(CLAVE) || "oscuro";
+  } catch (_) {
+    return respaldoTema;
+  }
+}
+
 function actualizarInterruptor(tema) {
   const interruptor = document.getElementById("interruptor-tema");
   const etiqueta = document.getElementById("etiqueta-tema");
@@ -1903,12 +1932,12 @@ function actualizarInterruptor(tema) {
 
 function aplicarTema(tema) {
   document.documentElement.dataset.tema = tema;
-  localStorage.setItem(CLAVE, tema);
+  guardarTema(tema);
   actualizarInterruptor(tema);
 }
 
 function obtenerTema() {
-  return localStorage.getItem(CLAVE) || "oscuro";
+  return leerTema();
 }
 
 function initTema() {
@@ -2083,13 +2112,22 @@ function irAPaso(indice) {
   }, espera);
 }
 
+// Igual que en tema.js: en visores de archivos con origen aislado
+// (WhatsApp/Telegram al abrir un .html adjunto) localStorage lanza
+// SecurityError. Sin este blindaje, ese error corta la ejecución del
+// resto del script. respaldoVisto cubre esa sesión mientras tanto.
+let respaldoVisto = false;
+
 function cerrarTour() {
   window.removeEventListener("resize", reposicionarActual);
   if (overlay) overlay.remove();
   overlay = null;
   const drawer = document.getElementById("menu-drawer");
   if (drawer) drawer.classList.remove("abierto");
-  localStorage.setItem(CLAVE_TOUR, "1");
+  respaldoVisto = true;
+  try {
+    localStorage.setItem(CLAVE_TOUR, "1");
+  } catch (_) {}
 }
 
 function iniciarTour() {
@@ -2099,7 +2137,11 @@ function iniciarTour() {
 }
 
 function iniciarTourSiEsPrimeraVez() {
-  if (!localStorage.getItem(CLAVE_TOUR)) iniciarTour();
+  let visto = respaldoVisto;
+  try {
+    visto = respaldoVisto || Boolean(localStorage.getItem(CLAVE_TOUR));
+  } catch (_) {}
+  if (!visto) iniciarTour();
 }
 
 // ============================================================

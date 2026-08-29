@@ -8,7 +8,11 @@
 <!-- Aplica el tema guardado antes de pintar, para evitar el parpadeo
      de un tema equivocado al cargar (ver js/tema.js). -->
 <script>
-  document.documentElement.dataset.tema = localStorage.getItem("nenes-tema") || "oscuro";
+  try {
+    document.documentElement.dataset.tema = localStorage.getItem("nenes-tema") || "oscuro";
+  } catch (_) {
+    document.documentElement.dataset.tema = "oscuro";
+  }
 </script>
 
 <!-- PWA: instalable en Android / iPhone / Windows -->
