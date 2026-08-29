@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>Nene's Shopping USA · Cuentas y Cuotas</title>
+<title>Nene's Shopping USA · Cuentas y Pagos</title>
 
 <!-- Aplica el tema guardado antes de pintar, para evitar el parpadeo
      de un tema equivocado al cargar (ver js/tema.js). -->
@@ -36,7 +36,7 @@
     <div class="logo-nenes-tarjeta">
       <img src="assets/logo-nenes-completo.png" alt="Nene's Shopping USA" class="logo-nenes-completo">
     </div>
-    <p>Cuentas y cuotas</p>
+    <p>Cuentas y pagos</p>
   </div>
   <div class="tarjeta-login">
     <form id="form-login">
@@ -137,6 +137,10 @@
     <div class="panel" style="text-align:center;">
       <div class="kpi-label">Saldo total pendiente</div>
       <div class="kpi-valor kpi-valor-grande" id="dc-saldo">$0.00</div>
+      <div class="dc-quincena-linea">
+        <span class="kpi-label">A pagar por quincena</span>
+        <span class="kpi-valor" id="dc-quincena">$0.00</span>
+      </div>
       <button class="btn btn-whatsapp" id="btn-whatsapp-cliente">📲 Enviar estado de cuenta por WhatsApp</button>
     </div>
     <div class="panel oculto" id="dc-notas-panel">
@@ -191,7 +195,7 @@
         <img src="assets/logo-nenes.png" alt="" class="drawer-icono">
         <div>
           <div class="drawer-titulo">Nene's Shopping USA</div>
-          <div class="drawer-sub">Cuentas y cuotas</div>
+          <div class="drawer-sub">Cuentas y pagos</div>
         </div>
       </div>
       <button class="icon-btn" id="btn-cerrar-menu" title="Cerrar">✕</button>
@@ -289,11 +293,11 @@
   </div>
 </div>
 
-<!-- Nueva cuenta (artículo a cuotas) -->
+<!-- Nueva cuenta (artículo a pagos) -->
 <div class="modal-fondo" id="modal-nueva-cuenta">
   <div class="modal-caja">
     <div class="modal-header">
-      <h3>Nueva cuenta a cuotas</h3>
+      <h3>Nueva cuenta a pagos</h3>
       <button class="icon-btn" data-cerrar-modal>✕</button>
     </div>
     <form id="form-nueva-cuenta">
@@ -310,15 +314,15 @@
         <input type="number" step="0.01" id="nc2-costo">
       </div>
       <div class="campo">
-        <label for="nc2-num-cuotas">Número de cuotas</label>
+        <label for="nc2-num-cuotas">Número de pagos</label>
         <input type="number" id="nc2-num-cuotas" min="1" value="1" required>
       </div>
       <div class="campo">
-        <label for="nc2-fecha-inicio">Fecha de la primera cuota</label>
+        <label for="nc2-fecha-inicio">Fecha del primer pago</label>
         <input type="date" id="nc2-fecha-inicio" required>
       </div>
       <div class="campo">
-        <label for="nc2-frecuencia">Frecuencia entre cuotas</label>
+        <label for="nc2-frecuencia">Frecuencia entre pagos</label>
         <select id="nc2-frecuencia">
           <option value="7">Semanal (7 días)</option>
           <option value="15" selected>Quincenal (15 días)</option>
@@ -349,7 +353,7 @@
         <input type="number" step="0.01" id="ecu-costo">
       </div>
       <p style="font-size:0.78rem;color:var(--tinta-suave);margin:-4px 0 12px;">
-        El monto total, número de cuotas y calendario no se editan aquí — si están mal,
+        El monto total, número de pagos y calendario no se editan aquí — si están mal,
         elimina la cuenta y créala de nuevo.
       </p>
       <button type="submit" class="btn btn-primario">Guardar cambios</button>

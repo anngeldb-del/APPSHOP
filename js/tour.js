@@ -53,7 +53,7 @@ const PASOS = [
     pantalla: "clientes",
     selector: "#btn-nuevo-cliente",
     titulo: "Nuevo cliente",
-    texto: "Nombre, teléfono, dirección y notas. Desde su detalle le creas cuentas a cuotas, le cobras y le mandas su estado de cuenta por WhatsApp."
+    texto: "Nombre, teléfono, dirección y notas. Desde su detalle le creas cuentas a pagos, le cobras y le mandas su estado de cuenta por WhatsApp."
   },
   {
     pantalla: "envios",

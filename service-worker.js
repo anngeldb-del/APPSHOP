@@ -6,7 +6,7 @@
 // archivos base para forzar actualización en los teléfonos.
 // ============================================================
 
-const CACHE_VERSION = "nenes-shopping-v7";
+const CACHE_VERSION = "nenes-shopping-v8";
 const CORE_ASSETS = [
   "./",
   "./index.html",

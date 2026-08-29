@@ -1,7 +1,7 @@
 {
-  "name": "Nene's Shopping USA — Cuentas y Cuotas",
+  "name": "Nene's Shopping USA — Cuentas y Pagos",
   "short_name": "Nene's Shop",
-  "description": "Control de clientes, cuentas y cuotas de Nene's Shopping USA — desarrollado por Code-Reset",
+  "description": "Control de clientes, cuentas y pagos de Nene's Shopping USA — desarrollado por Code-Reset",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

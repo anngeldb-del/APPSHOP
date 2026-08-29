@@ -42,7 +42,7 @@ export async function armarMensajeEstadoCuenta(clienteId) {
     lineas.push(`*${cuenta.articulo}* (pendiente ${formatoMoneda(cuenta.saldoPendiente)}):`);
     cuotasSnap.forEach((cuotaDoc) => {
       const cuota = cuotaDoc.data();
-      lineas.push(`  Cuota ${cuota.numero}/${cuenta.numCuotas} — ${formatoMoneda(cuota.monto)} — vence ${formatoFecha(cuota.fechaVencimiento)}`);
+      lineas.push(`  Pago ${cuota.numero}/${cuenta.numCuotas} — ${formatoMoneda(cuota.monto)} — vence ${formatoFecha(cuota.fechaVencimiento)}`);
     });
   }
 
@@ -53,7 +53,7 @@ export async function armarMensajeEstadoCuenta(clienteId) {
     mensaje: [
       `Hola ${cliente.nombre || ""}, este es tu estado de cuenta con Nene's Shopping USA:`,
       "",
-      ...(lineas.length ? lineas : ["No tienes cuotas pendientes por ahora. ¡Gracias!"]),
+      ...(lineas.length ? lineas : ["No tienes pagos pendientes por ahora. ¡Gracias!"]),
       "",
       `Saldo total pendiente: ${formatoMoneda(cliente.saldoPendiente || 0)}`,
       "",

@@ -113,6 +113,7 @@ export function render(container, user) {
   const dcNombre = document.getElementById("dc-nombre");
   const dcTelefono = document.getElementById("dc-telefono");
   const dcSaldo = document.getElementById("dc-saldo");
+  const dcQuincena = document.getElementById("dc-quincena");
   const dcNotasPanel = document.getElementById("dc-notas-panel");
   const dcNotas = document.getElementById("dc-notas");
   const cuentasClienteEl = document.getElementById("cuentas-cliente");
@@ -271,7 +272,7 @@ export function render(container, user) {
     const div = document.createElement("div");
     div.className = "pago-item";
     div.innerHTML = `
-      <div class="pi-info"><strong>${escaparHtml(pago.articulo || "")}</strong>${pago.cuotaNumero ? ` · Cuota ${pago.cuotaNumero}` : ""} · ${formatoFecha(pago.fecha)}</div>
+      <div class="pi-info"><strong>${escaparHtml(pago.articulo || "")}</strong>${pago.cuotaNumero ? ` · Pago ${pago.cuotaNumero}` : ""} · ${formatoFecha(pago.fecha)}</div>
       <div class="pi-monto">${formatoMoneda(pago.monto)} · ${METODOS_PAGO[pago.metodoPago] || pago.metodoPago}</div>
     `;
     return div;
@@ -387,12 +388,12 @@ export function render(container, user) {
   function actualizarPreviewCuotas() {
     const datos = leerFormularioCuenta();
     if (!datos) {
-      generadorCuotas.innerHTML = "Completa monto, cuotas y fecha para ver el calendario.";
+      generadorCuotas.innerHTML = "Completa monto, número de pagos y fecha para ver el calendario.";
       return;
     }
     const cuotas = calcularCuotas(datos);
     generadorCuotas.innerHTML = cuotas
-      .map((c) => `<div class="gc-fila"><span>Cuota ${c.numero} · ${formatoFecha(c.fechaVencimiento)}</span><span>${formatoMoneda(c.monto)}</span></div>`)
+      .map((c) => `<div class="gc-fila"><span>Pago ${c.numero} · ${formatoFecha(c.fechaVencimiento)}</span><span>${formatoMoneda(c.monto)}</span></div>`)
       .join("");
   }
 
@@ -486,7 +487,7 @@ export function render(container, user) {
 
   btnEliminarCuenta.addEventListener("click", async () => {
     if (!cuentaEditando) return;
-    if (!confirm("¿Eliminar esta cuenta y todas sus cuotas? Esta acción no se puede deshacer.")) return;
+    if (!confirm("¿Eliminar esta cuenta y todos sus pagos? Esta acción no se puede deshacer.")) return;
 
     btnEliminarCuenta.disabled = true;
     try {
@@ -508,17 +509,17 @@ export function render(container, user) {
     div.className = "cuota-item";
     if (cuota.pagado) {
       div.innerHTML = `
-        <div class="cu-info"><strong>Cuota ${cuota.numero}</strong> · ${formatoFecha(cuota.fechaVencimiento)}</div>
-        <div class="cuota-pagada">Pagada ✓</div>
+        <div class="cu-info"><strong>Pago ${cuota.numero}</strong> · ${formatoFecha(cuota.fechaVencimiento)}</div>
+        <div class="cuota-pagada">Pagado ✓</div>
       `;
     } else {
       div.innerHTML = `
-        <div class="cu-info"><strong>Cuota ${cuota.numero}</strong> · ${formatoFecha(cuota.fechaVencimiento)} · <span class="cu-monto">${formatoMoneda(cuota.monto)}</span></div>
+        <div class="cu-info"><strong>Pago ${cuota.numero}</strong> · ${formatoFecha(cuota.fechaVencimiento)} · <span class="cu-monto">${formatoMoneda(cuota.monto)}</span></div>
         <button class="btn-pagar">Pagar</button>
       `;
       div.querySelector(".btn-pagar").addEventListener("click", () => {
         pagoContexto = { clienteId, cuentaId, cuotaId: cuota.id, cuotaNumero: cuota.numero, monto: cuota.monto };
-        pagoResumen.textContent = `Cuota ${cuota.numero} — vence ${formatoFecha(cuota.fechaVencimiento)}`;
+        pagoResumen.textContent = `Pago ${cuota.numero} — vence ${formatoFecha(cuota.fechaVencimiento)}`;
         document.getElementById("pago-monto").value = cuota.monto;
         abrirModal("modal-pago");
       });
@@ -598,10 +599,19 @@ export function render(container, user) {
       (snap) => {
         cuentasClienteEl.innerHTML = "";
         if (snap.empty) {
-          cuentasClienteEl.innerHTML = `<div class="vacio"><div class="vacio-ico">🛍️</div><h3>Sin cuentas todavía</h3><p>Toca ＋ para registrar la primera compra a cuotas.</p></div>`;
+          cuentasClienteEl.innerHTML = `<div class="vacio"><div class="vacio-ico">🛍️</div><h3>Sin cuentas todavía</h3><p>Toca ＋ para registrar la primera compra a pagos.</p></div>`;
+          dcQuincena.textContent = formatoMoneda(0);
           return;
         }
-        snap.forEach((d) => cuentasClienteEl.appendChild(pintarCuentaCard(clienteId, d.id, d.data())));
+        let totalQuincena = 0;
+        snap.forEach((d) => {
+          const cuenta = d.data();
+          if (cuenta.estado === "activa" && cuenta.frecuenciaDias === 15) {
+            totalQuincena = redondear2(totalQuincena + (cuenta.montoCuota || 0));
+          }
+          cuentasClienteEl.appendChild(pintarCuentaCard(clienteId, d.id, cuenta));
+        });
+        dcQuincena.textContent = formatoMoneda(totalQuincena);
       }
     );
     unsubListeners.push(unsubCuentas);

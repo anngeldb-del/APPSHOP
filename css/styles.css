@@ -309,6 +309,18 @@ input, select { font-family: inherit; }
 
 .kpi-valor-grande { font-size: 26px; color: var(--rojo); text-shadow: 0 0 20px rgba(255, 45, 77, 0.25); }
 
+.dc-quincena-linea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 10px 0 14px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--borde);
+}
+.dc-quincena-linea .kpi-label { margin-bottom: 0; }
+.dc-quincena-linea .kpi-valor { color: var(--dorado); }
+
 .panel {
   background: var(--superficie);
   border: 1px solid var(--borde);
