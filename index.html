@@ -49,6 +49,7 @@
         <input type="password" id="login-password" autocomplete="current-password" required>
       </div>
       <div id="login-error" class="error-msg"></div>
+      <p id="login-hint-local" class="demo-hint oculto">Primera vez: la contraseña que escribas aquí quedará guardada para futuros accesos.</p>
       <button type="submit" class="btn btn-primario">Entrar</button>
     </form>
   </div>
@@ -71,6 +72,11 @@
         <h2>Dashboard</h2>
         <div class="sub">Nene's Shopping USA</div>
       </div>
+    </div>
+
+    <div class="aviso-respaldo oculto" id="dashboard-aviso-respaldo">
+      <span id="dashboard-aviso-respaldo-texto"></span>
+      <button class="btn-chip" id="btn-aviso-exportar" type="button">Exportar ahora</button>
     </div>
 
     <div class="grid-kpi" id="dashboard-kpis"></div>

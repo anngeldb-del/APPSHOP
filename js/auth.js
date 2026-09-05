@@ -4,12 +4,7 @@
 // No mezclar lógica de negocio aquí: solo autenticación.
 // ============================================================
 
-import { auth } from "./firebase-config.js";
-import {
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { auth, signInWithEmailAndPassword, signOut, onAuthStateChanged, MODO_LOCAL } from "./conexion.js";
 import { initRouter } from "./router.js";
 import { iniciarTourSiEsPrimeraVez } from "./tour.js";
 
@@ -17,8 +12,17 @@ const pantallaLogin = document.getElementById("pantalla-login");
 const appShell = document.getElementById("app-shell");
 const loginForm = document.getElementById("form-login");
 const loginError = document.getElementById("login-error");
+const loginHintLocal = document.getElementById("login-hint-local");
 const loginBtn = loginForm.querySelector("button[type=submit]");
 const btnSalir = document.getElementById("btn-salir");
+
+// En modo local (sin Firebase) el primer login configura la
+// contraseña del negocio — se avisa para que no parezca un error.
+if (MODO_LOCAL) {
+  import("./local-auth.js").then(({ hayContrasenaConfigurada }) => {
+    loginHintLocal.classList.toggle("oculto", hayContrasenaConfigurada());
+  });
+}
 
 function mostrarError(msg) {
   loginError.textContent = msg;
@@ -40,6 +44,7 @@ loginForm.addEventListener("submit", async (e) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
     // onAuthStateChanged se encarga de mostrar el app-shell
+    loginHintLocal.classList.add("oculto");
   } catch (err) {
     mostrarError(traducirErrorFirebase(err.code));
   } finally {
@@ -49,6 +54,7 @@ loginForm.addEventListener("submit", async (e) => {
 });
 
 btnSalir.addEventListener("click", async () => {
+  document.getElementById("menu-drawer")?.classList.remove("abierto");
   await signOut(auth);
 });
 

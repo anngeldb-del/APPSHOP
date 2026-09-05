@@ -12,8 +12,7 @@
 // sin exponer los números a un envío automatizado.
 // ============================================================
 
-import { db } from "../firebase-config.js";
-import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db, collection, getDocs, orderBy, query } from "../conexion.js";
 import { formatoMoneda, urlWhatsApp, mostrarToast } from "../utils.js";
 import { armarMensajeEstadoCuenta } from "../estado-cuenta.js";
 

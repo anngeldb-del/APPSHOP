@@ -7,16 +7,7 @@
 // misma lectura de Firestore en dos lugares.
 // ============================================================
 
-import { db } from "./firebase-config.js";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db, collection, doc, getDoc, getDocs, query, where, orderBy } from "./conexion.js";
 import { formatoMoneda, formatoFecha } from "./utils.js";
 
 export async function armarMensajeEstadoCuenta(clienteId) {

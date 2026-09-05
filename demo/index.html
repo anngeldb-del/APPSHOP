@@ -231,6 +231,28 @@ input, select { font-family: inherit; }
   min-height: 1em;
 }
 
+.demo-hint {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--tinta-suave);
+  margin: -6px 0 12px;
+}
+
+.aviso-respaldo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(255, 176, 32, 0.12);
+  border: 1px solid var(--dorado);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 0.82rem;
+  color: var(--tinta);
+}
+.aviso-respaldo #btn-aviso-exportar { flex-shrink: 0; }
+
 .credito-dev {
   text-align: center;
   font-size: 0.7rem;
@@ -921,6 +943,7 @@ input, select { font-family: inherit; }
       </div>
       <div id="login-error" class="error-msg"></div>
       <p class="demo-hint">Modo demo — cualquier correo y contraseña funcionan.</p>
+      <p id="login-hint-local" class="demo-hint oculto">Primera vez: la contraseña que escribas aquí quedará guardada para futuros accesos.</p>
       <button type="submit" class="btn btn-primario">Entrar</button>
     </form>
   </div>
@@ -943,6 +966,11 @@ input, select { font-family: inherit; }
         <h2>Dashboard</h2>
         <div class="sub">Nene's Shopping USA</div>
       </div>
+    </div>
+
+    <div class="aviso-respaldo oculto" id="dashboard-aviso-respaldo">
+      <span id="dashboard-aviso-respaldo-texto"></span>
+      <button class="btn-chip" id="btn-aviso-exportar" type="button">Exportar ahora</button>
     </div>
 
     <div class="grid-kpi" id="dashboard-kpis"></div>
@@ -2219,8 +2247,48 @@ function renderDashboard(container, user) {
   const listaGananciaEl = container.querySelector("#dashboard-ganancia-lista");
   const btnReporte = container.querySelector("#btn-descargar-reporte");
   const btnExportar = container.querySelector("#btn-exportar-negocio");
+  const avisoRespaldoEl = container.querySelector("#dashboard-aviso-respaldo");
+  const avisoRespaldoTextoEl = container.querySelector("#dashboard-aviso-respaldo-texto");
+  const btnAvisoExportar = container.querySelector("#btn-aviso-exportar");
 
   versionEl.textContent = "1.2.0";
+
+  // ---------------- Aviso de respaldo (modo local) ----------------
+  // Sin Firebase, los datos viven solo en este dispositivo — si se
+  // pierde o se resetea sin haber exportado, no hay forma de
+  // recuperarlos. Este aviso se revisa cada vez que se carga el
+  // dashboard (pantalla por defecto), así que aparece seguido si no
+  // se ha exportado un respaldo reciente.
+  const CLAVE_ULTIMO_RESPALDO = "nenes-ultimo-respaldo";
+  const DIAS_AVISO = 3;
+
+  function revisarAvisoRespaldo() {
+    let ultimo = null;
+    try {
+      ultimo = localStorage.getItem(CLAVE_ULTIMO_RESPALDO);
+    } catch (_) {}
+
+    if (!ultimo) {
+      avisoRespaldoTextoEl.textContent = "⚠ Todavía no has exportado un respaldo. Tus datos solo viven en este dispositivo.";
+      avisoRespaldoEl.classList.remove("oculto");
+      return;
+    }
+
+    const dias = Math.floor((Date.now() - Number(ultimo)) / (1000 * 60 * 60 * 24));
+    if (dias >= DIAS_AVISO) {
+      avisoRespaldoTextoEl.textContent = `⚠ Tu último respaldo fue hace ${dias} días. Tus datos solo viven en este dispositivo.`;
+      avisoRespaldoEl.classList.remove("oculto");
+    } else {
+      avisoRespaldoEl.classList.add("oculto");
+    }
+  }
+
+  function marcarRespaldoHecho() {
+    try {
+      localStorage.setItem(CLAVE_ULTIMO_RESPALDO, String(Date.now()));
+    } catch (_) {}
+    revisarAvisoRespaldo();
+  }
 
   // se guarda el último cálculo para no repetir la lectura de cuentas
   // cuando el usuario le da a "Descargar reporte" justo después de cargar
@@ -2325,9 +2393,9 @@ function renderDashboard(container, user) {
     }
   });
 
-  btnExportar.addEventListener("click", async () => {
-    btnExportar.disabled = true;
-    btnExportar.textContent = "Exportando…";
+  async function exportarRespaldo(boton, textoOriginal) {
+    boton.disabled = true;
+    boton.textContent = "Exportando…";
     try {
       const clientesSnap = await getDocs(collection(db, "clientes"));
 
@@ -2368,16 +2436,21 @@ function renderDashboard(container, user) {
         clientes
       });
       mostrarToast("Respaldo descargado");
+      marcarRespaldoHecho();
     } catch (err) {
       console.error("Error exportando el respaldo:", err);
       mostrarToast("No se pudo generar el respaldo");
     } finally {
-      btnExportar.disabled = false;
-      btnExportar.textContent = "📦 Exportar respaldo completo (JSON)";
+      boton.disabled = false;
+      boton.textContent = textoOriginal;
     }
-  });
+  }
+
+  btnExportar.addEventListener("click", () => exportarRespaldo(btnExportar, "📦 Exportar respaldo completo (JSON)"));
+  btnAvisoExportar.addEventListener("click", () => exportarRespaldo(btnAvisoExportar, "Exportar ahora"));
 
   document.addEventListener("datos:cambiaron", cargarDashboard);
+  revisarAvisoRespaldo();
   cargarDashboard();
 }
 
@@ -3334,6 +3407,7 @@ function initRouter(user) {
   renderRoute();
 }
 
+const MODO_LOCAL = false;
 // ============================================================
 // auth.js
 // Maneja login, logout y el cambio de pantalla login <-> app-shell.
@@ -3344,8 +3418,17 @@ const pantallaLogin = document.getElementById("pantalla-login");
 const appShell = document.getElementById("app-shell");
 const loginForm = document.getElementById("form-login");
 const loginError = document.getElementById("login-error");
+const loginHintLocal = document.getElementById("login-hint-local");
 const loginBtn = loginForm.querySelector("button[type=submit]");
 const btnSalir = document.getElementById("btn-salir");
+
+// En modo local (sin Firebase) el primer login configura la
+// contraseña del negocio — se avisa para que no parezca un error.
+if (MODO_LOCAL) {
+  import("./local-auth.js").then(({ hayContrasenaConfigurada }) => {
+    loginHintLocal.classList.toggle("oculto", hayContrasenaConfigurada());
+  });
+}
 
 function mostrarError(msg) {
   loginError.textContent = msg;
@@ -3367,6 +3450,7 @@ loginForm.addEventListener("submit", async (e) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
     // onAuthStateChanged se encarga de mostrar el app-shell
+    loginHintLocal.classList.add("oculto");
   } catch (err) {
     mostrarError(traducirErrorFirebase(err.code));
   } finally {
@@ -3376,6 +3460,7 @@ loginForm.addEventListener("submit", async (e) => {
 });
 
 btnSalir.addEventListener("click", async () => {
+  document.getElementById("menu-drawer")?.classList.remove("abierto");
   await signOut(auth);
 });
 

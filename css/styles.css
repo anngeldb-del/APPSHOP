@@ -211,6 +211,28 @@ input, select { font-family: inherit; }
   min-height: 1em;
 }
 
+.demo-hint {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--tinta-suave);
+  margin: -6px 0 12px;
+}
+
+.aviso-respaldo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(255, 176, 32, 0.12);
+  border: 1px solid var(--dorado);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 0.82rem;
+  color: var(--tinta);
+}
+.aviso-respaldo #btn-aviso-exportar { flex-shrink: 0; }
+
 .credito-dev {
   text-align: center;
   font-size: 0.7rem;

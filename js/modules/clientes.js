@@ -7,26 +7,7 @@
 // tocar el código de otros módulos.
 // ============================================================
 
-import { db } from "../firebase-config.js";
-import {
-  collection,
-  doc,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  query,
-  orderBy,
-  where,
-  limit,
-  startAfter,
-  serverTimestamp,
-  increment,
-  writeBatch,
-  runTransaction
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db, collection, doc, addDoc, updateDoc, deleteDoc, getDoc, getDocs, onSnapshot, query, orderBy, where, limit, startAfter, serverTimestamp, increment, writeBatch, runTransaction } from "../conexion.js";
 import { formatoMoneda, formatoFecha, sumarDias, mostrarToast, debounce, urlWhatsApp } from "../utils.js";
 import { armarMensajeEstadoCuenta } from "../estado-cuenta.js";
 

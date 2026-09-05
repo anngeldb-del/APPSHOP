@@ -12,18 +12,7 @@
 // crece mucho, convendría precalcular esto con una Cloud Function.
 // ============================================================
 
-import { db } from "../firebase-config.js";
-import {
-  collection,
-  collectionGroup,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  getCountFromServer,
-  getAggregateFromServer,
-  sum
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db, collection, collectionGroup, query, where, orderBy, getDocs, getCountFromServer, getAggregateFromServer, sum } from "../conexion.js";
 import { formatoMoneda, formatoMonedaCorta, etiquetaMes, ultimosMeses, descargarCSV, descargarJSON, mostrarToast } from "../utils.js";
 import { graficaBarras } from "../charts.js";
 
@@ -72,8 +61,48 @@ export function render(container, user) {
   const listaGananciaEl = container.querySelector("#dashboard-ganancia-lista");
   const btnReporte = container.querySelector("#btn-descargar-reporte");
   const btnExportar = container.querySelector("#btn-exportar-negocio");
+  const avisoRespaldoEl = container.querySelector("#dashboard-aviso-respaldo");
+  const avisoRespaldoTextoEl = container.querySelector("#dashboard-aviso-respaldo-texto");
+  const btnAvisoExportar = container.querySelector("#btn-aviso-exportar");
 
   versionEl.textContent = "1.2.0";
+
+  // ---------------- Aviso de respaldo (modo local) ----------------
+  // Sin Firebase, los datos viven solo en este dispositivo — si se
+  // pierde o se resetea sin haber exportado, no hay forma de
+  // recuperarlos. Este aviso se revisa cada vez que se carga el
+  // dashboard (pantalla por defecto), así que aparece seguido si no
+  // se ha exportado un respaldo reciente.
+  const CLAVE_ULTIMO_RESPALDO = "nenes-ultimo-respaldo";
+  const DIAS_AVISO = 3;
+
+  function revisarAvisoRespaldo() {
+    let ultimo = null;
+    try {
+      ultimo = localStorage.getItem(CLAVE_ULTIMO_RESPALDO);
+    } catch (_) {}
+
+    if (!ultimo) {
+      avisoRespaldoTextoEl.textContent = "⚠ Todavía no has exportado un respaldo. Tus datos solo viven en este dispositivo.";
+      avisoRespaldoEl.classList.remove("oculto");
+      return;
+    }
+
+    const dias = Math.floor((Date.now() - Number(ultimo)) / (1000 * 60 * 60 * 24));
+    if (dias >= DIAS_AVISO) {
+      avisoRespaldoTextoEl.textContent = `⚠ Tu último respaldo fue hace ${dias} días. Tus datos solo viven en este dispositivo.`;
+      avisoRespaldoEl.classList.remove("oculto");
+    } else {
+      avisoRespaldoEl.classList.add("oculto");
+    }
+  }
+
+  function marcarRespaldoHecho() {
+    try {
+      localStorage.setItem(CLAVE_ULTIMO_RESPALDO, String(Date.now()));
+    } catch (_) {}
+    revisarAvisoRespaldo();
+  }
 
   // se guarda el último cálculo para no repetir la lectura de cuentas
   // cuando el usuario le da a "Descargar reporte" justo después de cargar
@@ -178,9 +207,9 @@ export function render(container, user) {
     }
   });
 
-  btnExportar.addEventListener("click", async () => {
-    btnExportar.disabled = true;
-    btnExportar.textContent = "Exportando…";
+  async function exportarRespaldo(boton, textoOriginal) {
+    boton.disabled = true;
+    boton.textContent = "Exportando…";
     try {
       const clientesSnap = await getDocs(collection(db, "clientes"));
 
@@ -221,15 +250,20 @@ export function render(container, user) {
         clientes
       });
       mostrarToast("Respaldo descargado");
+      marcarRespaldoHecho();
     } catch (err) {
       console.error("Error exportando el respaldo:", err);
       mostrarToast("No se pudo generar el respaldo");
     } finally {
-      btnExportar.disabled = false;
-      btnExportar.textContent = "📦 Exportar respaldo completo (JSON)";
+      boton.disabled = false;
+      boton.textContent = textoOriginal;
     }
-  });
+  }
+
+  btnExportar.addEventListener("click", () => exportarRespaldo(btnExportar, "📦 Exportar respaldo completo (JSON)"));
+  btnAvisoExportar.addEventListener("click", () => exportarRespaldo(btnAvisoExportar, "Exportar ahora"));
 
   document.addEventListener("datos:cambiaron", cargarDashboard);
+  revisarAvisoRespaldo();
   cargarDashboard();
 }

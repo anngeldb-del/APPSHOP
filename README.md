@@ -1,12 +1,54 @@
-# Nene's Shopping USA — Cuentas y Cuotas
+# Nene's Shopping USA — Cuentas y Pagos
 
 PWA en HTML/JS puro (ES6 modules, sin build) para llevar clientes, artículos vendidos a
-cuotas y sus pagos. Firebase Auth + Firestore como backend. Desarrollado por Code-Reset
-(Ing. Luis Ángel Díaz Bernal) sobre el boilerplate base de Code-Reset.
+pagos y sus abonos. Desarrollado por Code-Reset (Ing. Luis Ángel Díaz Bernal) sobre el
+boilerplate base de Code-Reset.
 
-**¿Solo quieres mostrar cómo se ve/usa la app, sin conectar Firebase todavía?**
+**¿Solo quieres mostrar cómo se ve/usa la app, sin conectar nada todavía?**
 `demo/index.html` es un archivo único, autocontenido, con datos de ejemplo y sin
 dependencias — se puede mandar tal cual para que alguien la pruebe. Ver `demo/README.md`.
+
+## Modo local vs. Firebase — un solo interruptor
+
+Esta app puede correr de dos formas, sin cambiar nada del resto del código:
+
+- **Modo local (el que está activo ahora):** los datos viven solo en este dispositivo,
+  guardados en IndexedDB del navegador — sin costo de Firebase, sin internet para
+  funcionar. El login es una contraseña local (la primera vez que alguien entra, esa
+  contraseña queda guardada para la próxima). Pensado para negocios de un solo
+  dispositivo/dueño que no necesitan compartir los datos entre varios celulares.
+- **Firebase real (Auth + Firestore):** los datos viven en la nube, se puede entrar desde
+  varios dispositivos/empleados a la vez, y hay respaldo automático — el modo que traía el
+  boilerplate original.
+
+Todo el código de negocio (`dashboard.js`, `clientes.js`, `envios.js`, `estado-cuenta.js`,
+`auth.js`) importa de `js/conexion.js` en vez de Firebase directo, y no le importa cuál de
+los dos está activo — ambos exponen exactamente el mismo API (`collection`, `doc`,
+`addDoc`, `onSnapshot`, `signInWithEmailAndPassword`, etc.), así que no hay que tocar esos
+archivos para cambiar de modo.
+
+**Para activar Firebase más adelante:**
+1. Llenar `js/firebase-config.js` con las credenciales reales del proyecto (ver la sección
+   de abajo).
+2. En `js/conexion.js`, cambiar `export const MODO_LOCAL = true;` a `false`.
+3. Subir `CACHE_VERSION` en `service-worker.js` (cambió el shell) y volver a desplegar.
+
+Nada más se toca — el código de Firebase (`firebase-config.js`) ya estaba armado y
+funcionando desde antes, solo estaba dormido.
+
+**Importante sobre el modo local — hay que ser claros con el negocio sobre esto:**
+- Los datos NO tienen respaldo en la nube. Si el celular/compu se pierde, se rompe, o se
+  resetea de fábrica sin haber exportado un respaldo reciente, esos datos no se recuperan.
+  El dashboard avisa (banner amarillo) cuando no se ha exportado un respaldo en varios
+  días — pero el negocio tiene que darle clic a "Exportar ahora" quien tiene que tomar el
+  hábito de hacerlo seguido.
+- Solo funciona bien en **un dispositivo a la vez**. Si el negocio crece y necesita que
+  2+ personas vean los mismos clientes desde celulares distintos, hay que activar Firebase
+  (no hay forma de sincronizar dos IndexedDB de dispositivos distintos).
+- La contraseña local NO es seguridad real (no hay cifrado del contenido, solo una
+  pantalla de acceso) — alguien con acceso técnico al dispositivo podría evadirla. Sirve
+  para que un cliente/curioso que agarre el teléfono no vea los datos de inmediato, no para
+  proteger contra alguien que se proponga entrar.
 
 ## Marca
 
@@ -22,19 +64,23 @@ la bolsa de Nene's Shopping sobre fondo blanco, no el genérico de Code-Reset de
 
 ## Antes de usarla en producción
 
-1. Crear el proyecto en Firebase Console (Auth con método Correo/Contraseña + Firestore).
-2. Editar `js/firebase-config.js` con el `firebaseConfig` real del proyecto.
-3. Crear en Firebase Auth los usuarios del personal que va a usar la app (no hay registro
+Con el modo local activo (el que está por defecto — ver arriba), solo hacen falta los
+pasos marcados con 🟢. Los marcados con 🔵 son solo si se activa Firebase.
+
+1. 🟢 Activar GitHub Pages (Settings → Pages → rama `main`, carpeta `/root`) o el hosting
+   que se use para desplegar.
+2. 🟢 Subir `CACHE_VERSION` en `service-worker.js` cada vez que se toque el shell base
+   (index.html, css/styles.css, o cualquier archivo listado en `CORE_ASSETS`).
+3. 🔵 Crear el proyecto en Firebase Console (Auth con método Correo/Contraseña + Firestore).
+4. 🔵 Editar `js/firebase-config.js` con el `firebaseConfig` real del proyecto, y poner
+   `MODO_LOCAL = false` en `js/conexion.js`.
+5. 🔵 Crear en Firebase Auth los usuarios del personal que va a usar la app (no hay registro
    público, solo login).
-4. Desplegar `firestore.rules` y `firestore.indexes.json` (Firebase Console, o `firebase
+6. 🔵 Desplegar `firestore.rules` y `firestore.indexes.json` (Firebase Console, o `firebase
    deploy --only firestore:rules,firestore:indexes` con Firebase CLI). Los índices son
    necesarios porque el dashboard hace consultas de grupo de colecciones
    (`collectionGroup`) sobre `cuentas`, y el envío de estado de cuenta por WhatsApp filtra
    `cuotas` pendientes ordenadas por número.
-5. Activar GitHub Pages (Settings → Pages → rama `main`, carpeta `/root`) o el hosting que
-   se use para desplegar.
-6. Subir `CACHE_VERSION` en `service-worker.js` cada vez que se toque el shell base
-   (index.html, css/styles.css, o cualquier archivo listado en `CORE_ASSETS`).
 
 ## Modelo de datos (Firestore)
 
@@ -84,6 +130,10 @@ una cuenta o registrar un pago — no se recalcula leyendo todo cada vez.
 - `js/estado-cuenta.js`: arma el texto del estado de cuenta de un cliente (lo comparten el
   botón individual del detalle de cliente y el envío masivo, para no leer Firestore dos veces
   con la misma lógica).
+- `js/conexion.js`: el interruptor entre modo local y Firebase (ver arriba) — todo lo demás
+  importa de aquí.
+- `js/local-db.js` / `js/local-auth.js`: el reemplazo de Firestore/Auth para el modo local —
+  mismo API, datos en IndexedDB + contraseña con hash en `localStorage`.
 
 ## Reportes y WhatsApp
 

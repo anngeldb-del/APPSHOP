@@ -6,7 +6,7 @@
 // archivos base para forzar actualización en los teléfonos.
 // ============================================================
 
-const CACHE_VERSION = "nenes-shopping-v8";
+const CACHE_VERSION = "nenes-shopping-v9";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -15,6 +15,9 @@ const CORE_ASSETS = [
   "./js/app.js",
   "./js/router.js",
   "./js/auth.js",
+  "./js/conexion.js",
+  "./js/local-db.js",
+  "./js/local-auth.js",
   "./js/firebase-config.js",
   "./js/utils.js",
   "./js/tema.js",
